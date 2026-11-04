@@ -1,0 +1,16 @@
+name: AD8099
+class: opamp
+part: AD8099
+verified: false
+source: |
+  AD8099.txt:164「Input Voltage Noise  f = 100 kHz  0.95  nV/√Hz」
+  AD8099.txt:165「Input Current Noise  f = 100 kHz, DISABLE pin floating  2.6  pA/√Hz」
+  AD8099.txt:155「–3 dB Bandwidth  G = +5, VOUT = 0.2 V p-p  450  510  MHz」（Min/Typ）
+  AD8099.txt:158「Slew Rate  G = +10, VOUT = 6 V Step  1120  1350  V/µs」（Min/Typ）
+note: 电压反馈，±5V 规格表；gbw 未在手册正文定位（无 GBW/GBP 行），带宽只在 G=+5 有 –3 dB 值，用 bw_at_gain 表
+opamp:
+  en: 0.95n     # f=100kHz, Typ（AD8099.txt:164）
+  in: 2.6p      # f=100kHz, DISABLE 悬空, Typ（AD8099.txt:165）
+  sr: 1350      # G=+10, 6V 阶跃, Typ（AD8099.txt:158）
+  bw_at_gain:   # –3 dB 带宽, Typ（AD8099.txt:155）
+    5: 510M

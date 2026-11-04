@@ -1,0 +1,24 @@
+name: AD9238
+class: adc
+part: AD9238（双通道）
+verified: true
+source:
+  bits: 'AD9238.PDF:101「RESOLUTION … 12 … Bits」'
+  fs_max: 'AD9238.PDF:196「Max Conversion Rate … 65 … MSPS」'
+  enob: 'AD9238.PDF:239「fINPUT = 2.4 MHz … 70.2 / 70.2 / 70.1 dBc（SINAD，−65 型号取 70.1）」+ 476「ENOB = (SINAD – 1.76) / 6.02」'
+  vref: 'AD9238.PDF:122-123「Input Span = 1.0 V / 2.0 V … 1 / 2 V p-p」'
+  differential: 'AD9238.PDF:68-70「differential SHA … single-ended or differential applications」'
+  cadc: 'AD9238.PDF:124「Input Capacitance … 7 … pF」'
+note: 行号为 out/pdftext/AD9238.txt 的文本行号。手册未直接给 ENOB，按手册定义的 ENOB=(SINAD−1.76)/6.02 由 SINAD 70.1 dBc 折算为 11.35 bit；双通道器件在本工具里每个节点建模一个通道。差分 2 V p-p 跨度对应 vref=1.0 V。手册只给输入电容 7 pF，未给输入电阻，r_in 留空；按流水线 ADC 处理，conv_cycles=0。
+adc:
+  differential: true
+  n_bits_default: 12
+  n_bits_options: [12]
+  vref: 1.0
+  fs_max: 65M
+  f_adc: 65M
+  sampling_model: pipeline
+  cadc: 7p
+  per_bits:
+    12:
+      enob: 11.35

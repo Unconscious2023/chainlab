@@ -1,0 +1,24 @@
+name: AD9268
+class: adc
+part: AD9268（双通道）
+verified: true
+source:
+  bits: 'AD9268.PDF:153「RESOLUTION … 16 … Bits」'
+  fs_max: 'AD9268.PDF:126「dual, 16-bit, 80 MSPS/105 MSPS/125 MSPS analog-to-digital converter」'
+  enob: 'AD9268.PDF:249「fIN = 2.4 MHz … 12.9 / 12.7 / 12.7 Bits（−125 型号取 12.7）」'
+  vref: 'AD9268.PDF:181-182「Input Span, VREF = 1.0 V … 2 … V p-p」'
+  differential: 'AD9268.PDF:147「VIN = −1.0 dBFS differential input」'
+  cadc: 'AD9268.PDF:183「Input Capacitance … 8 … pF」'
+note: 行号为 out/pdftext/AD9268.txt 的文本行号。ENOB 取表中 −125 型号、fIN = 2.4 MHz 的 12.7 bit。双通道器件在本工具里每个节点建模一个通道。差分 2 V p-p 跨度对应 vref=1.0 V。手册只给输入电容 8 pF，未给输入电阻，r_in 留空；按流水线 ADC 处理，conv_cycles=0。
+adc:
+  differential: true
+  n_bits_default: 16
+  n_bits_options: [16]
+  vref: 1.0
+  fs_max: 125M
+  f_adc: 125M
+  sampling_model: pipeline
+  cadc: 8p
+  per_bits:
+    16:
+      enob: 12.7

@@ -1,0 +1,14 @@
+name: AD8655
+class: opamp
+part: AD8655
+verified: false
+source: |
+  AD8655.txt:170「Input Voltage Noise Density  en  f = 10 kHz  2.7  nV/√Hz」
+  AD8655.txt:173「Gain Bandwidth Product  GBP  28  MHz」
+  AD8655.txt:174「Slew Rate  SR  RL = 10 kΩ  11  V/µs」
+  AD8655.txt:169「f = 1 kHz  4  nV/√Hz」（同表低频点，未取）
+note: in 未在手册正文定位（CMOS 输入，规格表只给电压噪声，无电流噪声行）；en 取首页标称 2.7nV/√Hz @10kHz；VS=5V 表
+opamp:
+  en: 2.7n    # f=10kHz, Typ（AD8655.txt:170，首页同值）
+  gbw: 28M    # Typ（AD8655.txt:173）
+  sr: 11      # RL=10kΩ, Typ（AD8655.txt:174）

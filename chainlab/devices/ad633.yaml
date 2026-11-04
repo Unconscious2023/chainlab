@@ -1,0 +1,16 @@
+name: AD633
+class: multiplier
+part: AD633（四象限模拟乘法器，1 MHz）
+verified: true
+source: AD633 datasheet（8 页）—— 馈通 0.3 %/0.1 % FS，小信号带宽 1 MHz，压摆率 20 V/µs，输出 ±11 V
+note: >-
+  W = (X1−X2)(Y1−Y2)/10 + Z，U = 10。馈通按 ±10 V 满量程折算：0.3 % → 30 mV，0.1 % → 10 mV。
+noise_source: AD633 规格表「OUTPUT NOISE  Wideband Noise  f = 10 Hz to 5 MHz  1 mV rms」，按 5 MHz 折算 ≈447 nV/√Hz
+noise_density: 447n      # V/√Hz，输出噪声密度
+multiplier:
+  U: 10
+  bw: 1M
+  feedthrough_x: 30m
+  feedthrough_y: 10m
+  slew: 20
+  v_swing: 11

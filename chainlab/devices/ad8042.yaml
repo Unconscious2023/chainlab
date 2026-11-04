@@ -1,0 +1,16 @@
+name: AD8042
+class: opamp
+part: AD8042
+verified: false
+source: |
+  AD8042.txt:96「Input Voltage Noise  f = 10 kHz  15  nV/÷Hz」
+  AD8042.txt:97「Input Current Noise  f = 10 kHz  700  fA/÷Hz」
+  AD8042.txt:88「–3 dB Small Signal Bandwidth, VO < 0.5 V p-p  G = +1  125  160  MHz」（Min/Typ）
+  AD8042.txt:90「Slew Rate  G = –1, VO = 2 V Step  130  200  V/ms」（Min/Typ，V/ms 即 V/µs）
+note: 电压反馈，单 5V；gbw 未在手册正文定位（无 GBW/GBP 行，只有 –3 dB 带宽），带宽用 bw_at_gain 表；文本 µ→m 转写
+opamp:
+  en: 15n       # f=10kHz, Typ（AD8042.txt:96）
+  in: 700f      # f=10kHz, Typ（AD8042.txt:97）
+  sr: 200       # G=–1, 2V 阶跃, Typ 200 V/µs（AD8042.txt:90）
+  bw_at_gain:   # –3 dB 小信号带宽, Typ（AD8042.txt:88）
+    1: 160M

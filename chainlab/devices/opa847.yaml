@@ -1,0 +1,18 @@
+name: OPA847
+class: opamp
+part: OPA847
+verified: true
+source: |
+  OPA847IDBVTG4.txt:208「Input Voltage Noise Density  f > 1MHz  0.85  0.92  0.98  1.0  nV/√Hz  max  B」
+  OPA847IDBVTG4.txt:209「Input Current Noise Density  f > 1MHz  2.5  3.5  3.6  3.7  pA/√Hz  max  B」
+  OPA847IDBVTG4.txt:199「Gain Bandwidth Product (GBP)  G ≥ +50  3900  …  MHz  min  B」
+  OPA847IDBVTG4.txt:212「Slew Rate  2V Step  950  700  625  535  V/µs  min  B」
+note: 低噪声电压反馈，G ≥ +12 稳定（G=+12 闭环带宽 600MHz）；VS=±5V 规格表（RF=750Ω, G=+20 默认）
+opamp:
+  en: 0.85n   # f>1MHz, Typ（OPA847IDBVTG4.txt:208）
+  in: 2.5p    # f>1MHz, Typ（OPA847IDBVTG4.txt:209）
+  gbw: 3.9G   # G≥+50, Typ 3900MHz（OPA847IDBVTG4.txt:199）
+  sr: 950     # 2V 阶跃, Typ（OPA847IDBVTG4.txt:212）
+  v_swing: 2.5
+  i_out_max: 60m
+  g_min: 12

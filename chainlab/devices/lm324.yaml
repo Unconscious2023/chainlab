@@ -1,0 +1,13 @@
+name: LM324
+class: opamp
+part: LM324
+verified: false
+source: |
+  lm324.txt:493「eN 输入电压噪声密度  RS = 100Ω，VI = 0V，f = 1kHz  35  nV/√Hz」
+  lm324.txt:506「GBW 增益带宽积  RL = 1MΩ，CL = 20pF  1.2  MHz」
+  lm324.txt:508「SR 压摆率  RL = 1MΩ，CL = 30pF，VI = ±10V  0.5  V/μs」
+note: 通用运放；中文手册（LM324B/BA 表 6.5，TA=25°C）；in 未在手册正文定位（噪声一节只有 0.1~10Hz 电压噪声与 1kHz 噪声密度，无电流噪声行）
+opamp:
+  en: 35n     # RS=100Ω, f=1kHz, Typ（lm324.txt:493）
+  gbw: 1.2M   # Typ（lm324.txt:506）
+  sr: 0.5     # Typ（lm324.txt:508）

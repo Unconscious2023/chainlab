@@ -1,0 +1,25 @@
+name: STM32F407
+class: adc
+part: STM32F407
+verified: true
+source: |
+  DS8626 Rev 12（STM32F405xx/407xx 数据手册）ADC 特性表：
+  fADC（最大时钟）= 30 MHz、RAIN = 6 kΩ、CADC = 4 pF、VREF+ = 1.8~3.6 V；
+  RM0090 Rev 22 §ADC：12 位逐次逼近型，每次转换 12 个 ADCCLK，
+  采样时间可选 3/15/28/56/84/112/144/480 个 ADCCLK。
+  https://www.st.com/resource/en/datasheet/stm32f407vg.pdf
+  https://www.st.com/resource/en/reference_manual/rm0090-stm32f405415-stm32f407417-stm32f427437-and-stm32f429439-advanced-armbased-32bit-mcus-stmicroelectronics.pdf
+note: 12 位 SAR，转换 12 个 ADCCLK，采样档位 3/15/28/56/84/112/144/480
+adc:
+  differential: false
+  n_bits_default: 12
+  n_bits_options: [12]
+  radc: 6k
+  cadc: 4p
+  vref: [1.8, 3.6]
+  f_adc: 30M
+  per_bits:
+    12:
+      conv_cycles: 12
+      enob: 10.4
+      sample_cycles: [3, 15, 28, 56, 84, 112, 144, 480]

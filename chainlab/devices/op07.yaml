@@ -1,0 +1,10 @@
+name: OP07
+class: opamp
+opamp:
+  gbw: 600k
+  sr: 0.3
+  en: 9.8n
+  vos: 75u
+  v_swing: 3.3
+  i_out_max: 20m
+  g_min: 1

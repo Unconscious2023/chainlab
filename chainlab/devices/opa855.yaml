@@ -1,0 +1,15 @@
+name: OPA855
+class: opamp
+part: OPA855
+verified: true
+source: |
+  OPA855.txt:328「en  Input-referred voltage noise  f = 1 MHz  0.98  nV/rHz  C」
+  OPA855.txt:329「ei  Input-referred current noise  f = 1 MHz  2.3  pA/rHz  C」
+  OPA855.txt:308「GBP  Gain-bandwidth product  8  GHz  C」
+  OPA855.txt:310「SR  Slew rate (10%-90%)  VOUT = 2-V step  2750  V/µs  C」
+note: G ≥ +7 稳定（手册标题 Gain of 7 V/V Stable）；单 5V 供电规格表（VS+=5V, G=+7, RF=453Ω）
+opamp:
+  en: 0.98n   # f=1MHz, Typ（OPA855.txt:328）
+  in: 2.3p    # f=1MHz, Typ（OPA855.txt:329）
+  gbw: 8G     # Typ（OPA855.txt:308）
+  sr: 2750    # 2V 阶跃, Typ（OPA855.txt:310）

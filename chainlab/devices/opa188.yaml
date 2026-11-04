@@ -1,0 +1,15 @@
+name: OPA188
+class: opamp
+part: OPA188
+verified: true
+source: |
+  OPA188.txt:184「en  Input voltage noise density, f = 1 kHz  8.8  nV/Hz」
+  OPA188.txt:185「in  Input current noise density, f = 1 kHz  7  fA/Hz」
+  OPA188.txt:207「GBW  Gain-bandwidth product  2  MHz」
+  OPA188.txt:208「SR  Slew rate  G = +1  0.8  V/μs」
+note: 零漂移（0.03μV/°C）；高压规格表（VS=±4V~±18V，TA=+25°C）
+opamp:
+  en: 8.8n    # f=1kHz, Typ（OPA188.txt:184）
+  in: 7f      # f=1kHz, Typ（OPA188.txt:185）
+  gbw: 2M     # Typ（OPA188.txt:207）
+  sr: 0.8     # G=+1, Typ（OPA188.txt:208）

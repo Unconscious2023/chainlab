@@ -1,0 +1,11 @@
+name: OPA2188
+class: opamp
+opamp:
+  gbw: 2M
+  sr: 0.8
+  en: 8.8n
+  in: 7f   # OPA188 手册：Input current noise density 7 fA/√Hz @1kHz（同系列）
+  vos: 6u
+  v_swing: 3.3
+  i_out_max: 15m
+  g_min: 1

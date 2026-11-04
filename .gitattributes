@@ -1,0 +1,6 @@
+# 中文文档与源码统一按文本 diff
+*.md text
+*.py text
+*.html text
+*.yaml text
+*.bat text

@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chainlab"
+version = "1.0.0"
+description = "Signal-chain budget & algorithm-capability simulator for analog front-end design"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "ChainLab contributors" }]
+keywords = ["signal-chain", "noise-budget", "adc", "enob", "filter-design", "education"]
+dependencies = ["numpy>=1.24", "PyYAML>=6.0"]
+
+[project.scripts]
+chainlab-ui = "chainlab.ui.server:main"
+chainlab-cli = "chainlab.cli:main"
+
+[tool.setuptools]
+packages = ["chainlab", "chainlab.core", "chainlab.blocks", "chainlab.ui"]
+
+[tool.setuptools.package-data]
+chainlab = ["devices/*.yaml", "ui/index.html", "examples/*.yaml"]

@@ -1,0 +1,28 @@
+name: AD9764
+class: dac
+part: AD9764
+verified: true
+source:
+  bits: 'AD9764.PDF:79「RESOLUTION … 14 … Bits」'
+  fs_max: 'AD9764.PDF:149「Maximum Output Update Rate (fCLOCK) … 125 … MSPS」'
+  settling: 'AD9764.PDF:150「Output Settling Time (tST) (to 0.1%) … 35 … ns」'
+  noise_density: 'AD9764.PDF:155「Output Noise (IOUTFS = 20 mA) … 50 … pA/√Hz」'
+  vref: 'AD9764.PDF:97「Reference Voltage … 1.20 … V」'
+  i_out_fs: 'AD9764.PDF:92「Full-Scale Output Current … 2.0 … 20.0 … mA」'
+  differential: 'AD9764.PDF:9「Differential Current Outputs: 2 mA to 20 mA」'
+  output_resistance: 'AD9764.PDF:94「Output Resistance … 100 … kΩ」'
+  output_compliance: 'AD9764.PDF:93「Output Compliance Range … –1.0 … 1.25 … V」'
+note: 行号为 out/pdftext/AD9764.txt 的文本行号。电流输出型 DAC：满量程是 2~20 mA 电流，手册未给电压满量程，vfs 由外部负载电阻按 i_out_fs × r_load 折算（差分时取 2 倍）；输出噪声 50 pA/√Hz 也是电流噪声，工具按 r_load 折成电压噪声。
+dac:
+  bits: 14
+  n_bits_default: 14
+  n_bits_options: [14]
+  fs_max: 125M
+  settling: 35n
+  vref: 1.20
+  i_out_fs: [2m, 20m]
+  differential: true
+  noise_density: 50p
+  noise_density_kind: current
+  output_resistance: 100k
+  output_compliance: [-1.0, 1.25]

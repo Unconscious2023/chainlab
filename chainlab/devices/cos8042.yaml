@@ -1,0 +1,16 @@
+name: COS8042
+class: opamp
+part: COS8042（科山双运放，170 MHz，轨到轨输出）
+verified: true
+source: COS8041/8042/8044 规格书 —— 170 MHz @-3dB，压摆率 200 V/µs，en 18 nV/√Hz @10 kHz
+note: >-
+  轨到轨输出（10 kΩ 负载时距轨 20 mV，150 Ω 时 700 mV）；短路电流 40/47 mA；
+  供电 3.2~12 V（±1.6~±6 V）。电流噪声规格书未给，模型按 0 处理。
+opamp:
+  gbw: 170M
+  sr: 200
+  en: 18n
+  vos: 3m
+  v_swing: 3.3
+  i_out_max: 40m
+  g_min: 1

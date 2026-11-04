@@ -1,0 +1,24 @@
+name: STM32F407-DAC
+class: dac
+part: STM32F407（DAC，12 位双通道）
+verified: true
+source:
+  bits: 'DS8626 Rev 12（STM32F405xx/STM32F407xx 数据手册，https://www.st.com/resource/en/datasheet/stm32f407vg.pdf）封面特性表「2×12-bit D/A converters」；RM0090 Rev 22 §14.1（https://www.st.com/resource/en/reference_manual/rm0090-stm32f405415-stm32f407417-stm32f427437-and-stm32f429439-advanced-armbased-32bit-mcus-stmicroelectronics.pdf）「The DAC module is a 12-bit, voltage output digital-to-analog converter. The DAC can be configured in 8- or 12-bit mode」'
+  channels: 'RM0090 Rev 22 §14.2 DAC main features「Two DAC converters: one output channel each」「Dual DAC channel for independent or simultaneous conversions」；DS8626 Rev 12 Table 7 STM32F40xxx pin and ball definitions（PA4 行标注 ADC12_IN4 / DAC_OUT1，PA5 行标注 ADC12_IN5 / DAC_OUT2）'
+  fs_max: 'DS8626 Rev 12 Table 74 DAC characteristics（p.143，https://www.st.com/resource/en/datasheet/stm32f407vg.pdf）Update rate「Max frequency for a correct DAC_OUT change when small variation in the input code (from code i to i+1LSB)」Max = 1 MS/s，条件 CLOAD ≤ 50 pF、RLOAD ≥ 5 kΩ'
+  settling: 'DS8626 Rev 12 Table 74（p.143，https://www.st.com/resource/en/datasheet/stm32f407vg.pdf）tSETTLING「Settling time (full scale: for a 10-bit input code transition between the lowest and the highest input codes when DAC_OUT reaches final value ±4LSB)」Typ 3 µs、Max 6 µs，条件 CLOAD ≤ 50 pF、RLOAD ≥ 5 kΩ'
+  vref: 'DS8626 Rev 12 Table 74（p.141，https://www.st.com/resource/en/datasheet/stm32f407vg.pdf）VREF+「Reference supply voltage 1.8 (min) … 3.6 (max) V」，注释「VREF+ ≤ VDDA」；RM0090 Rev 22 Table 74 DAC pins「1.8 V ≤ VREF+ ≤ VDDA」'
+  output_range: 'DS8626 Rev 12 Table 74（p.142，https://www.st.com/resource/en/datasheet/stm32f407vg.pdf）「DAC_OUT min with buffer ON 0.2 V」「DAC_OUT max with buffer ON VDDA – 0.2 V」「DAC_OUT min with buffer OFF 0.5 mV」「DAC_OUT max with buffer OFF VREF+ – 1LSB」'
+  buffer: 'DS8626 Rev 12 Table 74（p.142，https://www.st.com/resource/en/datasheet/stm32f407vg.pdf）RLOAD「Resistive load with buffer ON 5 kΩ (min)」、RO「Impedance output with buffer OFF 15 kΩ (max)」、CLOAD「Capacitive load 50 pF (max, buffer ON)」；RM0090 Rev 22 §14.3.2「The DAC integrates two output buffers that can be used to reduce the output impedance, and to drive external loads directly without having to add an external operational amplifier」'
+  accuracy: 'DS8626 Rev 12 Table 74（p.142，https://www.st.com/resource/en/datasheet/stm32f407vg.pdf）DNL「±2 LSB」（12 位配置，10 位配置 ±0.5 LSB）、INL「±4 LSB」（12 位配置，10 位配置 ±1 LSB）、Offset「±10 mV / ±12 LSB」（12 位，VREF+ = 3.6 V）、Gain error「±0.5 %」（12 位配置）'
+  differential: 'DS8626 Rev 12 Table 74 只有 DAC_OUT1/DAC_OUT2 单端输出（Table 7：PA4 = DAC_OUT1，PA5 = DAC_OUT2），无差分输出项；RM0090 Rev 22 §14.1 亦只描述两个单端输出通道'
+  output_formula: 'RM0090 Rev 22 §14.3.5 DAC output voltage「Digital inputs are converted to output voltages on a linear conversion between 0 and VREF+ … DACoutput = VREF × DOR/4096」（https://www.st.com/resource/en/reference_manual/rm0090-stm32f405415-stm32f407417-stm32f427437-and-stm32f429439-advanced-armbased-32bit-mcus-stmicroelectronics.pdf）'
+note: 数据手册 DS8626 Rev 12 与参考手册 RM0090 Rev 22 已下载到 datasheet/（STM32F407-ds.pdf、RM0090.pdf），提取文本在 out/pdftext/。DAC 为 12 位电压输出、双通道（DAC_OUT1/PA4、DAC_OUT2/PA5），单端输出，无差分模式；RM0090 §14.1 另允许 8 位模式（数据写入 DHR8Rx，相当于 8 位有效分辨率），因此 n_bits_options 给 12/8。更新率上限 1 MS/s，是「小码跳变（code i → i+1LSB）」条件下的指标；满量程跳变到 ±4 LSB 的建立时间为 3 µs（典型）/6 µs（最大），两者不是同一条件，工具对满量程跳变会给出建立时间提示，settling 取典型值 3 µs。输出缓冲器可开可关：开时输出 0.2 V～VDDA−0.2 V、负载 ≥5 kΩ、容性负载 ≤50 pF；关时输出 0.5 mV～VREF+−1LSB、输出阻抗 ≤15 kΩ（要 1% 精度负载需 ≥1.5 MΩ）。手册未给 DAC 输出噪声密度与 THD（Table 74 的 THD 行无数据），noise_density 留空；THD 无法核对。VREF+ 由外部提供（1.8～3.6 V，且 ≤VDDA），vref 未填，工具按面板上的参考电压计算满量程（默认 3.3 V）。工具只对单通道建模，双通道视为两个独立 DAC 实例。
+dac:
+  bits: 12
+  n_bits_default: 12
+  n_bits_options: [12, 8]
+  channels: 2
+  fs_max: 1M
+  settling: 3u
+  differential: false

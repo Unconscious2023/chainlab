@@ -1,0 +1,15 @@
+name: ADA4528-1
+class: opamp
+part: ADA4528-1
+verified: true
+source: |
+  ADA4528-1.txt:207「Voltage Noise Density  en  f = 1 kHz, AV = +100  5.6  nV/√Hz」
+  ADA4528-1.txt:210「Current Noise Density  in  f = 1 kHz, AV = +100  0.7  pA/√Hz」
+  ADA4528-1.txt:198「Gain Bandwidth Product  GBP  VIN = 10 mV p-p … AV = +100  3  MHz」
+  ADA4528-1.txt:194「Slew Rate  SR  RL = 10 kΩ, CL = 100 pF, AV = +1  0.45  V/μs」
+note: 零漂移；数值取 2.5V 规格表（Table 2，VSY=2.5V）；5V 表为 GBP 3.4MHz / SR 0.5V/μs / en 5.9n / in 0.5p
+opamp:
+  en: 5.6n    # f=1kHz, Typ（ADA4528-1.txt:207）
+  in: 0.7p    # f=1kHz, Typ（ADA4528-1.txt:210）
+  gbw: 3M     # AV=+100, Typ（ADA4528-1.txt:198）
+  sr: 0.45    # AV=+1, Typ（ADA4528-1.txt:194）

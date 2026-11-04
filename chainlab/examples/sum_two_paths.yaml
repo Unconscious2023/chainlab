@@ -1,0 +1,22 @@
+meta:
+  name: 两路求和
+  fs: 100k
+  t_window: 10周期
+
+nodes:
+  - {id: src, type: source, params: {type: sine, f: 1k, amp: 100m}}
+  - {id: a1,  type: amp,    params: {device: OPA227, G: 8}}
+  - {id: a2,  type: amp,    params: {device: OPA227, G: 2}}
+  - {id: sum, type: add,    params: {k: [1, 1], dc: 1.65}}
+  - {id: adc, type: adc,    params: {device: STM32F407, vref: 3.3}}
+  - {id: sc,  type: scope}
+  - {id: sp,  type: specan, params: {n_fft: 65536}}
+
+edges:
+  - [src, a1]
+  - [src, a2]
+  - [a1, sum, 0]
+  - [a2, sum, 1]
+  - [sum, adc]
+  - [adc, sc]
+  - [adc, sp]

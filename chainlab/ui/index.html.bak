@@ -1,0 +1,830 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>信号链路仿真</title>
+<style>
+:root{--bg:#f4f5f7;--panel:#fff;--line:#e3e6eb;--ink:#111827;--muted:#6b7280;
+  --blue:#2563eb;--blue-soft:#eef4ff;--red:#b91c1c}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:14px/1.6 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+  display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;align-items:center;gap:16px;padding:10px 18px;background:var(--panel);
+  border-bottom:1px solid var(--line);z-index:5}
+.brand{font-weight:600;font-size:15px}
+.brand small{color:var(--muted);font-weight:400;margin-left:6px;font-size:12px}
+.meta{display:flex;gap:12px;align-items:center;margin-left:auto}
+.field{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.field input{width:80px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;
+  font:inherit;font-size:13px;color:var(--ink)}
+button{font:inherit;cursor:pointer;border-radius:7px;border:1px solid var(--line);
+  background:#fff;color:var(--ink);padding:7px 12px;transition:.12s}
+button:hover{border-color:#c9cfda}
+.primary{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:500}
+.primary:hover{background:#1d4ed8}
+.primary:disabled{opacity:.6;cursor:progress}
+main{flex:1;display:grid;grid-template-columns:170px minmax(0,1fr) 330px;min-height:0}
+.col{overflow:auto;background:var(--panel)}
+.col+.col{border-left:1px solid var(--line)}
+.palette{padding:12px}.inspector{padding:14px}
+.sect-title{font-size:11px;letter-spacing:.08em;color:var(--muted);margin:0 0 9px}
+.pal-btn{display:flex;align-items:center;gap:8px;width:100%;margin-bottom:6px;padding:8px 9px;text-align:left}
+.pal-btn .g{width:21px;height:21px;display:grid;place-items:center;border-radius:6px;
+  background:var(--blue-soft);color:var(--blue);font-size:12px;flex:0 0 21px}
+.pal-btn:disabled{opacity:.4;cursor:not-allowed}
+.divider{height:1px;background:var(--line);margin:11px 0}
+.canvas-wrap{position:relative;overflow:auto;background:
+  radial-gradient(circle,#dfe3ea 1px,transparent 1px) 0 0/18px 18px,var(--bg)}
+#canvas{position:relative;min-width:860px;min-height:540px;transform-origin:0 0}
+svg.wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+svg.wires path{fill:none;stroke:#94a3b8;stroke-width:1.6}
+svg.wires path.temp{stroke:var(--blue);stroke-dasharray:5 4}
+svg.wires circle.dot{fill:#fff;stroke:#94a3b8;stroke-width:1.4;pointer-events:all;cursor:pointer}
+svg.wires circle.dot:hover{stroke:var(--red);fill:#fee2e2}
+.node{position:absolute;width:158px;background:var(--panel);border:1px solid var(--line);
+  border-radius:9px;box-shadow:0 1px 2px rgba(17,24,39,.05);user-select:none}
+.node.sel{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-soft)}
+.node .hd{display:flex;align-items:center;gap:7px;padding:7px 9px;cursor:grab;
+  border-bottom:1px solid #f1f2f5;background:#fcfcfd;border-radius:8px 8px 0 0}
+.node .hd .g{width:20px;height:20px;display:grid;place-items:center;border-radius:5px;
+  background:var(--blue-soft);color:var(--blue);font-size:11px;flex:0 0 20px}
+.node .hd .nm{font-size:12.5px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.node .hd .x{border:none;background:none;color:#c3c8d2;font-size:14px;padding:0 2px;line-height:1}
+.node .hd .x:hover{color:var(--red)}
+.node .bd{padding:6px 9px 8px;font-size:11.5px;color:var(--muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.port{position:absolute;width:11px;height:11px;border-radius:50%;background:#fff;
+  border:1.6px solid #94a3b8;cursor:crosshair;z-index:3}
+.port:hover{border-color:var(--blue);background:var(--blue-soft)}
+.port.in{left:-6px}.port.out{right:-6px;top:22px}.port.spare{opacity:.55;border-style:dashed}
+.splitter{height:6px;cursor:row-resize;background:transparent;flex:0 0 6px}
+.splitter:hover{background:#dfe3ea}
+.result{overflow:auto;background:var(--panel);border-top:1px solid var(--line);
+  display:none}
+.result.show{display:block;max-height:44vh}
+.res-inner{padding:12px 18px 18px}
+.tabs{display:flex;gap:6px;margin-bottom:10px;align-items:center}
+.tabs .ax{margin-left:auto;display:flex;gap:6px;align-items:center}
+.tabs .ax select{padding:3px 6px;font-size:12px;border:1px solid var(--line);border-radius:6px}
+.tab{padding:5px 12px;font-size:12.5px;border-radius:6px;border:1px solid transparent;color:var(--muted)}
+.tab.on{background:var(--blue-soft);border-color:#cddcff;color:var(--blue);font-weight:500}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:12px}
+.card{border:1px solid var(--line);border-radius:9px;padding:9px 11px}
+.card .k{color:var(--muted);font-size:11px}
+.card .v{font-size:16px;font-weight:600;margin-top:2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+td,th{padding:4px 6px;border-bottom:1px solid #eef0f3;text-align:left}
+th{color:var(--muted);font-weight:500;font-size:11px}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar{height:6px;background:#eef1f6;border-radius:4px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--blue)}
+.msg{border-radius:8px;padding:8px 11px;font-size:12.5px;margin-top:8px;white-space:pre-wrap}
+.msg.err{background:#fef2f2;border:1px solid #fecaca;color:#7f1d1d}
+.msg.warn{background:#fffbeb;border:1px solid #fde68a;color:#78350f}
+.msg.risk{background:#f5f3ff;border:1px solid #ddd6fe;color:#4c1d95}
+canvas.chart{width:100%;height:190px;display:block}
+.row{margin-bottom:10px}
+.row label{display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px}
+.row input,.row select{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:6px;
+  font:inherit;font-size:12.5px;background:#fff;color:var(--ink)}
+.row input:focus,.row select:focus{outline:2px solid var(--blue-soft);border-color:var(--blue)}
+.row .unit{color:#9ca3af;font-size:10.5px;margin-left:5px}
+.row.chk{display:flex;align-items:center;gap:7px}
+.row.chk label{margin:0}
+.insp-h{display:flex;align-items:baseline;gap:8px;margin-bottom:11px}
+.insp-h b{font-size:13.5px}.insp-h span{color:var(--muted);font-size:11.5px}
+.hint{color:var(--muted);font-size:11.5px;line-height:1.6}
+.empty{color:var(--muted);font-size:12.5px}
+.modal{position:fixed;inset:0;background:rgba(17,24,39,.35);display:none;
+  align-items:center;justify-content:center;z-index:50}
+.modal.on{display:flex}
+.modal-box{background:#fff;border-radius:12px;padding:20px 22px;width:620px;max-width:92vw;
+  box-shadow:0 12px 40px rgba(17,24,39,.25)}
+.modal-box h3{margin:0 0 14px;font-size:15px}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-bottom:12px}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+#banner{display:none;padding:9px 18px;font-size:13px;line-height:1.55}
+#banner.on{display:block}
+#banner.err{background:#fef2f2;color:#7f1d1d;border-bottom:1px solid #fecaca}
+#banner.warn{background:#fffbeb;color:#78350f;border-bottom:1px solid #fde68a}
+#banner b{font-weight:600;margin-right:6px}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">信号链路仿真<small>v1.3</small></div>
+  <div class="meta">
+    <div class="field">采样率<input id="meta-fs" value="100k"></div>
+    <div class="field">周期数<input id="meta-periods" value="10"></div>
+    <button id="btn-run" class="primary">运行</button>
+  </div>
+</header>
+<div id="banner"></div>
+
+<main>
+  <div class="col palette">
+    <p class="sect-title">模块</p><div id="palette"></div>
+    <div class="divider"></div>
+    <p class="hint">右侧圆点拖出连线，落到左侧圆点。<br>滚轮缩放，连线中点的小圆点删线。</p>
+  </div>
+  <div class="col canvas-wrap" id="canvas-wrap"><div id="canvas"><svg class="wires" id="wires"></svg></div></div>
+  <div class="col inspector"><div id="inspector"></div></div>
+</main>
+
+<div class="splitter" id="splitter"></div>
+<div class="result" id="result"></div>
+
+<div class="modal" id="modal"><div class="modal-box">
+  <h3>滤波器设计</h3>
+  <div class="modal-grid">
+    <div class="row"><label>类型</label><select id="d-type">
+      <option value="lowpass">低通</option><option value="highpass">高通</option>
+      <option value="bandpass">带通</option></select></div>
+    <div class="row"><label>响应</label><select id="d-resp">
+      <option value="butterworth">巴特沃斯</option>
+      <option value="chebyshev1">切比雪夫 I（通带等波纹）</option>
+      <option value="chebyshev2">切比雪夫 II（阻带等波纹）</option>
+      <option value="bessel">贝塞尔（群延迟最平）</option></select></div>
+    <div class="row"><label>阶数</label><select id="d-order"></select></div>
+    <div class="row"><label>增益</label><input id="d-gain" value="1"></div>
+    <div class="row" id="row-fc"><label>截止频率<span class="unit">Hz</span></label><input id="d-fc" value="50k"></div>
+    <div class="row" id="row-flo"><label>下限截止频率<span class="unit">Hz</span></label><input id="d-flo" value="9k"></div>
+    <div class="row" id="row-fhi"><label>上限截止频率<span class="unit">Hz</span></label><input id="d-fhi" value="11k"></div>
+    <div class="row" id="row-ripple"><label>通带纹波<span class="unit">dB</span></label><input id="d-ripple" value="0.5"></div>
+    <div class="row" id="row-atten"><label>阻带衰减<span class="unit">dB</span></label><input id="d-atten" value="40"></div>
+    <div class="row" id="row-q"><label>Q（由上下限算出）</label><input id="d-q" readonly></div>
+    <div class="row"><label>纵轴范围</label><select id="d-range">
+      <option value="40">到 −40 dB</option><option value="full">全频带</option></select></div>
+  </div>
+  <canvas id="d-plot" class="chart" style="height:210px;border:1px solid #eef0f3;border-radius:8px"></canvas>
+  <div class="modal-actions">
+    <button id="d-preview">预览</button>
+    <button id="d-cancel">取消</button>
+    <button id="d-apply" class="primary">应用</button>
+  </div>
+</div></div>
+
+<script>
+let SCHEMA=null, nodes=[], edges=[], sel=null, seq=1;
+let dragging=null, wiring=null, splitting=false, running=false;
+let zoom=1, chartMode='specan', lastRes=null, designerNode=null;
+const NODE_W=158;
+const $=id=>document.getElementById(id);
+window.addEventListener('error',e=>{
+  const bn=document.getElementById('banner');
+  if(bn){bn.className='on err';bn.textContent='页面脚本错误：'+(e.message||e);}
+});
+window.addEventListener('unhandledrejection',e=>{
+  const bn=document.getElementById('banner');
+  if(bn){bn.className='on err';bn.textContent='页面脚本错误：'+(e.reason&&e.reason.message||e.reason);}
+});
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const def=t=>SCHEMA.blocks[t];
+const devMeta=n=>(SCHEMA.device_meta||{})[n]||{};
+
+function defaults(type){
+  const o={};
+  for(const f of def(type).fields) if(f.default!==undefined) o[f.key]=f.default;
+  return o;
+}
+const newNode=(type,x,y)=>({id:type+(seq++),type,params:defaults(type),x,y});
+function portSlots(n){
+  if(n.type==='add') return Math.max(1, parseInt(n.params.n_in||2));
+  if(n.type==='adc') return n.params.input_mode==='differential'?2:1;
+  const k=def(n.type).n_in;
+  return k===0?0:(k||1);
+}
+
+function summary(n){
+  const p=n.params;
+  if(n.type==='source'){
+    if(p.type==='noise') return `白噪声 ${p.psd||''}${p.rms?'RMS '+p.rms:''}`;
+    const m={sine:'正弦',square:'方波',triangle:'三角波',dc:'直流',am:'调幅',fm:'调频'};
+    return `${m[p.type]||p.type} ${p.f}Hz ${p.amp}V`;
+  }
+  if(n.type==='amp') return `${p.device||'自定义'} · G=${p.G}`;
+  if(n.type==='filter') return p.mode==='tf'?'自定义传函'
+    :`${({lowpass:'低通',highpass:'高通',bandpass:'带通'}[p.type]||p.type)} ${p.order}阶 fc=${p.fc}`;
+  if(n.type==='add'){
+    const k=Array.isArray(p.k)?p.k.join('/'):(p.k||1);
+    return `${parseInt(p.n_in||2)} 路 k=${k} · ${p.dc}V`;
+  }
+  if(n.type==='adc') return `${p.device||'自定义'} ${p.n_bits?p.n_bits+'bit':''}`;
+  if(n.type==='mult') return `${p.device||'自定义'} · U=${p.U}V`;
+  if(n.type==='noise') return p.rms?`RMS ${p.rms} V`:`${p.psd} V/√Hz`;
+  if(n.type==='scope') return `窗 ${p.t_start||0}~${p.t_end||'末'} s`;
+  if(n.type==='specan') return `FFT ${p.n_fft}`;
+  if(n.type==='algo') return p.path||'未配置';
+  return '';
+}
+
+/* ---------------- 渲染 ---------------- */
+function renderPalette(){
+  const hasAdc=nodes.some(n=>n.type==='adc');
+  let h='';
+  for(const k of SCHEMA.palette_order){
+    const dis=(k==='adc'&&hasAdc)?'disabled':'';
+    h+=`<button class="pal-btn" data-add="${k}" ${dis}><span class="g">${def(k).glyph}</span>${def(k).label}</button>`;
+  }
+  h+='<div class="divider"></div>';
+  for(const k of SCHEMA.sink_order)
+    h+=`<button class="pal-btn" data-add="${k}"><span class="g">${def(k).glyph}</span>${def(k).label}</button>`;
+  $('palette').innerHTML=h;
+  $('palette').querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>addNode(b.dataset.add));
+}
+
+function renderNodes(){
+  const host=$('canvas');
+  host.querySelectorAll('.node').forEach(e=>e.remove());
+  nodes.forEach(n=>{
+    const d=def(n.type), slots=portSlots(n);
+    const el=document.createElement('div');
+    el.className='node'+(sel&&sel.kind==='node'&&sel.id===n.id?' sel':'');
+    el.style.left=n.x+'px'; el.style.top=n.y+'px'; el.dataset.id=n.id;
+    el.style.height=Math.max(56,34+Math.max(slots,1)*18)+'px';
+    el.innerHTML=`<div class="hd"><span class="g">${d.glyph}</span><span class="nm">${d.label}</span>
+      <button class="x" title="删除">×</button></div><div class="bd">${esc(summary(n))}</div>`;
+    let ports='';
+    for(let i=0;i<slots;i++){
+      const occupied=edges.some(e=>e.to===n.id&&e.port===i);
+      ports+=`<div class="port in ${occupied?'':'spare'}" data-in="${n.id}" data-port="${i}"
+        style="top:${20+i*18}px" title="输入 ${i+1}"></div>`;
+    }
+    if(d.n_out!==0) ports+=`<div class="port out" data-out="${n.id}" style="top:22px" title="输出"></div>`;
+    el.insertAdjacentHTML('beforeend',ports);
+    el.querySelector('.hd').onmousedown=e=>{
+      if(e.target.classList.contains('x'))return;
+      const p=toCanvas(e);
+      dragging={id:n.id,dx:p.x-n.x,dy:p.y-n.y};
+      sel={kind:'node',id:n.id}; renderInspector(); renderNodes(); drawWires();
+      e.preventDefault();
+    };
+    el.querySelector('.x').onclick=e=>{e.stopPropagation();removeNode(n.id);};
+    el.querySelectorAll('.port.in').forEach(p=>p.onmouseup=ev=>{
+      ev.stopPropagation(); if(wiring) connect(wiring.from,p.dataset.in,+p.dataset.port);
+    });
+    el.querySelectorAll('.port.out').forEach(p=>p.onmousedown=ev=>{
+      ev.stopPropagation(); ev.preventDefault();
+      const c=toCanvas(ev); wiring={from:n.id,x:c.x,y:c.y}; drawWires();
+    });
+    host.appendChild(el);
+  });
+  let mx=0,my=0;
+  nodes.forEach(n=>{mx=Math.max(mx,n.x+NODE_W);my=Math.max(my,n.y+150);});
+  host.style.width=Math.max(860,mx+40)+'px';
+  host.style.height=Math.max(540,my+40)+'px';
+}
+
+function portPos(id,kind,idx){
+  const n=nodes.find(x=>x.id===id); if(!n) return{x:0,y:0};
+  return kind==='out'?{x:n.x+NODE_W,y:n.y+27}:{x:n.x,y:n.y+25+idx*18};
+}
+function drawWires(){
+  const svg=$('wires'); let h='';
+  edges.forEach((e,i)=>{
+    const a=portPos(e.from,'out'),b=portPos(e.to,'in',e.port);
+    const dx=Math.max(40,Math.abs(b.x-a.x)*.45);
+    h+=`<path d="M${a.x},${a.y} C${a.x+dx},${a.y} ${b.x-dx},${b.y} ${b.x},${b.y}"/>`;
+    h+=`<circle class="dot" cx="${(a.x+b.x)/2}" cy="${(a.y+b.y)/2}" r="4.5" data-edge="${i}"/>`;
+  });
+  if(wiring){
+    const a=portPos(wiring.from,'out');
+    const dx=Math.max(40,Math.abs(wiring.x-a.x)*.45);
+    h+=`<path class="temp" d="M${a.x},${a.y} C${a.x+dx},${a.y} ${wiring.x-dx},${wiring.y} ${wiring.x},${wiring.y}"/>`;
+  }
+  svg.innerHTML=h;
+  svg.querySelectorAll('[data-edge]').forEach(c=>c.onclick=()=>{edges.splice(+c.dataset.edge,1);renderAll();});
+}
+
+function fieldHtml(f,n){
+  let v=n.params[f.key]===undefined?'':String(n.params[f.key]);
+  if(f.key==='enob'&&v===''){
+    const m=devMeta(n.params.device);
+    const e=(m.enob_by_bits||{})[String(n.params.n_bits||m.n_bits_default||'')];
+    if(e!==undefined&&e!==null) v=String(e);
+  }
+  if(f.type==='select'){
+    let opts=f.options;
+    if(f.key==='input_mode'){
+      const m=devMeta(n.params.device);
+      opts=opts.filter(([val])=>val==='single'||m.differential);
+    }
+    return `<div class="row"><label>${f.label}</label><select data-k="${f.key}">`+
+      opts.map(([val,lab])=>`<option value="${esc(val)}" ${String(val)===v?'selected':''}>${esc(lab)}</option>`).join('')+
+      `</select></div>`;
+  }
+  if(f.type==='dynamic_select'){
+    const meta=devMeta(n.params.device);
+    const opts=(meta.n_bits_options||[12,14,16]).map(b=>[String(b),b+' bit']);
+    const cur=v||String(meta.n_bits_default||opts[0][0]);
+    return `<div class="row"><label>${f.label}</label><select data-k="${f.key}">`+
+      opts.map(([val,lab])=>`<option value="${esc(val)}" ${String(val)===cur?'selected':''}>${lab}</option>`).join('')+
+      `</select></div>`;
+  }
+  if(f.type==='bool')
+    return `<div class="row chk"><input type="checkbox" data-k="${f.key}" ${v?'checked':''}>
+      <label>${f.label}</label></div>`;
+  return `<div class="row"><label>${f.label}${f.unit?`<span class="unit">${f.unit}</span>`:''}</label>
+    <input type="text" data-k="${f.key}" value="${esc(v)}"></div>`;
+}
+
+function renderInspector(){
+  const box=$('inspector');
+  if(!sel||sel.kind!=='node'){box.innerHTML='<p class="empty">点一个节点改参数。</p>';return;}
+  const n=nodes.find(x=>x.id===sel.id);
+  if(!n){sel=null;return renderInspector();}
+  const d=def(n.type);
+  let h=`<div class="insp-h"><b>${d.label}</b><span>${n.id}</span></div>`;
+  const shown=d.fields.filter(f=>{
+    if(f.modal) return false;
+    if(!f.show_if) return true;
+    const cur=n.params[f.show_if.key];
+    const vals=Array.isArray(f.show_if.value)?f.show_if.value:[f.show_if.value];
+    return vals.map(String).includes(String(cur));
+  });
+  for(const f of shown) h+=fieldHtml(f,n);
+  if(d.formula) h+=`<p class="hint">${esc(d.formula)}</p>`;
+
+  if(d.summer){
+    const cnt=Math.max(1,parseInt(n.params.n_in||2));
+    const ks=Array.isArray(n.params.k)?n.params.k:[n.params.k||1];
+    h+='<div class="divider"></div><p class="sect-title">各端口增益</p>';
+    for(let i=0;i<cnt;i++)
+      h+=`<div class="row"><label>第 ${i+1} 路 k${i+1}</label><input type="text" data-kidx="${i}" value="${esc(ks[i]??1)}"></div>`;
+  }
+  if(d.designer)
+    h+=`<button style="width:100%;margin-top:6px" data-designer="1">打开滤波器设计…</button>`;
+  const dm=devMeta(n.params.device);
+  if(dm.note) h+=`<p class="hint">${esc(dm.note)}</p>`;
+  if(dm.source) h+=`<p class="hint">来源：${esc(dm.source)}</p>`;
+  h+='<div class="divider"></div><p class="hint">数值支持 10k / 2.2u / 3.3V 写法。</p>';
+  box.innerHTML=h;
+
+  box.querySelectorAll('[data-k]').forEach(el=>{
+    el.oninput=el.onchange=()=>{
+      const k=el.dataset.k;
+      n.params[k]=el.type==='checkbox'?el.checked:el.value;
+      if(k==='device'){
+        const m=devMeta(n.params.device);
+        if(m.n_bits_options) n.params.n_bits=String(m.n_bits_default||m.n_bits_options[0]);
+        if(m.enob_by_bits&&n.params.n_bits) n.params.enob=m.enob_by_bits[String(n.params.n_bits)];
+        renderInspector();
+      }
+      if(k==='n_bits'){
+        const m=devMeta(n.params.device);
+        if(m.enob_by_bits) n.params.enob=m.enob_by_bits[String(n.params.n_bits)];
+        renderInspector();
+      }
+      if(k==='n_in') renderInspector();
+      renderNodes(); drawWires();
+      if(['type','mode','sample_mode','response','device','n_bits','n_in','input_mode'].includes(k)) renderInspector();
+    };
+  });
+  box.querySelectorAll('[data-kidx]').forEach(el=>{
+    el.oninput=()=>{
+      const cnt=Math.max(1,parseInt(n.params.n_in||2));
+      const ks=Array.isArray(n.params.k)?n.params.k.slice():[];
+      ks[+el.dataset.kidx]=el.value;
+      for(let i=0;i<cnt;i++) if(ks[i]===undefined) ks[i]='1';
+      n.params.k=ks; renderNodes();
+    };
+  });
+  const db=box.querySelector('[data-designer]');
+  if(db) db.onclick=()=>openDesigner(n);
+}
+
+function renderAll(){renderPalette();renderNodes();renderInspector();drawWires();}
+
+/* ---------------- 交互 ---------------- */
+function toCanvas(e){
+  const r=$('canvas').getBoundingClientRect();
+  return {x:(e.clientX-r.left)/zoom,y:(e.clientY-r.top)/zoom};
+}
+function addNode(type){
+  const n=newNode(type,40+(nodes.length%4)*190,40+Math.floor(nodes.length/4)*120);
+  nodes.push(n); sel={kind:'node',id:n.id}; renderAll();
+}
+function removeNode(id){
+  nodes=nodes.filter(n=>n.id!==id);
+  edges=edges.filter(e=>e.from!==id&&e.to!==id);
+  if(sel&&sel.id===id) sel=null;
+  renderAll();
+}
+function reaches(from,to){
+  const seen=new Set(),stack=[from];
+  while(stack.length){
+    const c=stack.pop(); if(c===to) return true;
+    if(seen.has(c)) continue; seen.add(c);
+    for(const e of edges) if(e.from===c) stack.push(e.to);
+  }
+  return false;
+}
+function connect(from,to,port){
+  wiring=null;
+  if(from===to||reaches(to,from)){drawWires();return;}
+  edges=edges.filter(e=>!(e.to===to&&e.port===port));
+  edges.push({from,to,port});
+  renderAll();
+}
+
+document.addEventListener('mousemove',e=>{
+  if(dragging){
+    const n=nodes.find(x=>x.id===dragging.id);
+    if(n){
+      const p=toCanvas(e);
+      n.x=Math.max(0,p.x-dragging.dx); n.y=Math.max(0,p.y-dragging.dy);
+      const el=$('canvas').querySelector(`[data-id="${n.id}"]`);
+      if(el){el.style.left=n.x+'px';el.style.top=n.y+'px';}
+      drawWires();
+    }
+  }
+  if(wiring){const p=toCanvas(e);wiring.x=p.x;wiring.y=p.y;drawWires();}
+  if(splitting){
+    const h=Math.max(120,Math.min(window.innerHeight-160,window.innerHeight-e.clientY));
+    const r=$('result'); r.style.maxHeight='none'; r.style.height=h+'px';
+    r.dataset.userH='1';
+    if(lastRes) drawChart();
+  }
+});
+document.addEventListener('mouseup',()=>{
+  dragging=null; splitting=false;
+  if(wiring){wiring=null;drawWires();}
+});
+document.addEventListener('keydown',e=>{
+  if((e.key==='Delete'||e.key==='Backspace')&&sel&&sel.kind==='node'
+     &&document.activeElement.tagName!=='INPUT'){
+    e.preventDefault(); removeNode(sel.id);
+  }
+});
+$('splitter').onmousedown=e=>{splitting=true;e.preventDefault();};
+$('canvas-wrap').addEventListener('wheel',e=>{
+  e.preventDefault();
+  const wrap=$('canvas-wrap'), r=wrap.getBoundingClientRect();
+  const mx=e.clientX-r.left+wrap.scrollLeft, my=e.clientY-r.top+wrap.scrollTop;
+  const old=zoom;
+  zoom=Math.min(2.2,Math.max(.4,zoom*(e.deltaY<0?1.12:.89)));
+  $('canvas').style.zoom=zoom;
+  const ratio=zoom/old;
+  wrap.scrollLeft=mx*ratio-(e.clientX-r.left);
+  wrap.scrollTop=my*ratio-(e.clientY-r.top);
+},{passive:false});
+
+/* ---------------- 运行 ---------------- */
+function toCfg(){
+  const out=[];
+  for(const n of nodes){
+    const p={};
+    for(const f of def(n.type).fields){
+      if(f.key==='sample_mode') continue;
+      const v=n.params[f.key];
+      if(v===undefined||v===null||v==='') continue;
+      if(f.type==='bool'){if(v) p[f.key]=true;continue;}
+      if(f.type==='list'){
+        const arr=String(v).split(',').map(s=>parseFloat(s.trim())).filter(x=>!isNaN(x));
+        if(arr.length) p[f.key]=arr;
+        continue;
+      }
+      p[f.key]=v;
+    }
+    if(Array.isArray(n.params.k)) p.k=n.params.k;
+    if(n.type==='adc'){
+      if((n.params.sample_mode||'solve')==='solve') p.sample={solve:{rain:n.params.rain||'0'}};
+      else p.sample={cycles:n.params.cycles||28};
+      delete p.rain; delete p.cycles;
+    }
+    if(n.type==='add'){
+      if(p.ripple_f&&p.ripple_amp) p.ripple={f:p.ripple_f,amp:p.ripple_amp};
+      delete p.ripple_f; delete p.ripple_amp;
+    }
+    out.push({id:n.id,type:n.type,params:p});
+  }
+  return {meta:{name:'界面链路',fs:$('meta-fs').value,
+    t_window:($('meta-periods').value||'10')+'周期'},
+    nodes:out,edges:edges.map(e=>({from:e.from,to:e.to,port:e.port}))};
+}
+
+async function runChain(){
+  if(running) return;
+  running=true; const btn=$('btn-run'); btn.disabled=true; btn.textContent='运行中…';
+  try{
+    const r=await fetch('/api/run',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(toCfg())});
+    showResult(await r.json());
+  }catch(e){showResult({ok:false,error:'请求失败：'+e});}
+  finally{running=false;btn.disabled=false;btn.textContent='运行';}
+}
+
+/* ---------------- 结果 ---------------- */
+function fmt(v,u=''){
+  if(v===null||v===undefined) return '—';
+  const a=Math.abs(v); if(a===0) return '0 '+u;
+  const T=[[1e9,'G'],[1e6,'M'],[1e3,'k'],[1,''], [1e-3,'m'],[1e-6,'µ'],[1e-9,'n'],[1e-12,'p']];
+  for(const [s,p] of T) if(a>=s*.999) return parseFloat((v/s).toPrecision(4))+' '+p+u;
+  return v.toPrecision(4)+' '+u;
+}
+const KIND={source:'信号源',amp:'放大器',filter:'滤波器',add:'加法器',adc:'ADC',scope:'示波器',specan:'频谱仪',algo:'算法'};
+
+function showResult(data){
+  const box=$('result'); box.classList.add('show');
+  const bn=$('banner');
+  if(!box.dataset.userH) box.style.height='';
+  if(!data.ok){
+    bn.className='on err';
+    bn.innerHTML='<b>拒绝执行</b>'+esc(String(data.error).split('\n')[0]);
+    box.innerHTML=`<div class="res-inner"><div class="msg err">${esc(data.error)}</div></div>`;
+    lastRes=null; return;
+  }
+  lastRes=data.result;
+  if(!lastRes.sinks[chartMode]&&lastRes.sinks.specan) chartMode='specan';
+  const r=lastRes,m=r.metrics,total=r.noise_total||1e-30;
+  const rows=r.budget.filter(x=>x.noise>0).sort((a,b)=>b.noise-a.noise);
+  const cnt={}; rows.forEach(x=>cnt[x.kind]=(cnt[x.kind]||0)+1);
+  const budget=rows.map(x=>{
+    const pct=100*x.noise*x.noise/(total*total);
+    return `<tr><td>${(KIND[x.kind]||x.kind)+(cnt[x.kind]>1?' '+x.id:'')}</td>
+      <td class="n">${fmt(x.noise,'Vrms')}</td>
+      <td><div class="bar"><span style="width:${Math.min(pct,100)}%"></span></div></td>
+      <td class="n">${pct.toFixed(2)}%</td></tr>`;
+  }).join('');
+  const notes=[].concat(r.errors.map(t=>['err','错误',t]))
+    .concat(r.warnings.map(t=>['warn','提示',t]))
+    .concat(r.risks.map(t=>['risk','未建模',t]))
+    .map(([c,k,t])=>`<div class="msg ${c}"><b>${k}</b> ${esc(t)}</div>`).join('');
+
+  if(r.errors.length){
+    bn.className='on err';
+    bn.innerHTML=`<b>${r.errors.length} 个错误</b>`+
+      r.errors.slice(0,2).map(esc).join('；')+(r.errors.length>2?' …':'');
+  }else if(r.warnings.length){
+    bn.className='on warn';
+    bn.innerHTML=`<b>${r.warnings.length} 条提示</b>`+
+      r.warnings.slice(0,2).map(esc).join('；')+(r.warnings.length>2?' …':'');
+  }else{
+    bn.className='';
+  }
+
+  const tabs=[['specan','频谱仪'],['scope','示波器']]
+    .filter(([k])=>r.sinks[k])
+    .map(([k,l])=>`<button class="tab ${chartMode===k?'on':''}" data-tab="${k}">${l}</button>`).join('');
+
+  box.innerHTML=`<div class="res-inner">
+    <div class="cards">
+      <div class="card"><div class="k">SNR</div><div class="v">${m.snr_db===null?'∞':m.snr_db.toFixed(2)+' dB'}</div></div>
+      <div class="card"><div class="k">有效位数</div><div class="v">${m.enob.toFixed(2)} bit</div></div>
+      <div class="card"><div class="k">总噪声</div><div class="v">${fmt(total,'Vrms')}</div></div>
+      <div class="card"><div class="k">基波</div><div class="v">${fmt(m.fund_hz,'Hz')} · ${fmt(m.fund_amp,'Vpk')}</div></div>
+    </div>
+    <div class="grid2">
+      <div><table><thead><tr><th>模块</th><th class="n">噪声</th><th>占比</th><th class="n"></th></tr></thead>
+        <tbody>${budget}</tbody></table></div>
+      <div><div class="tabs">${tabs}<span class="ax">
+        <span class="hint">横轴</span>
+        <select id="ax-x"><option value="linear">线性</option><option value="log">对数</option></select>
+        <span class="hint">纵轴</span>
+        <select id="ax-y"><option value="linear">线性</option><option value="log">对数</option></select>
+      </span></div><canvas id="chart" class="chart"></canvas></div>
+    </div>${notes}
+  </div>`;
+  box.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{
+    chartMode=b.dataset.tab; drawChart();
+    box.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('on',x.dataset.tab===chartMode));
+  });
+  const ax=$('ax-x'), ay=$('ax-y');
+  if(ax&&ay){
+    ax.value=window.chartX||'linear'; ay.value=window.chartY||'linear';
+    ax.onchange=()=>{window.chartX=ax.value;drawChart();};
+    ay.onchange=()=>{window.chartY=ay.value;drawChart();};
+  }
+  drawChart();
+}
+
+function drawChart(){
+  const cv=document.getElementById('chart'); if(!cv||!lastRes) return;
+  const sink=lastRes.sinks[chartMode]; const plot=sink&&sink._plot;
+  const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight||190;
+  cv.width=W*dpr;cv.height=H*dpr;
+  const ctx=cv.getContext('2d'); ctx.setTransform(1,0,0,1,0,0); ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+  if(!plot){ctx.fillStyle='#9ca3af';ctx.font='13px sans-serif';ctx.fillText('没有数据',12,24);return;}
+  if(chartMode==='specan') drawSpectrum(ctx,W,H,plot); else drawWave(ctx,W,H,plot);
+}
+
+function drawSpectrum(ctx,W,H,plot){
+  const sn=nodes.find(x=>x.type==='specan');
+  const xlog=(window.chartX||'linear')==='log';
+  const ylog=(window.chartY||'linear')==='log';
+  const ml=46,mr=46,mt=10,mb=24,iw=W-ml-mr,ih=H-mt-mb;
+  const fmax=plot.fs/2;
+  const fmin=Math.max(plot.f[0]||1,1e-6);
+  const X = xlog
+    ? f=>ml+iw*(Math.log10(Math.max(f,fmin))-Math.log10(fmin))/(Math.log10(fmax)-Math.log10(fmin))
+    : f=>ml+iw*f/fmax;
+  const dbMax=Math.max(...plot.db)+6;
+  const amp=v=>Math.pow(10,v/20);
+  let lo,hi,val,lab;
+  if(ylog){ lo=dbMax-110; hi=dbMax; val=v=>v; lab=v=>v.toFixed(0); }
+  else { lo=0; hi=amp(dbMax)*1.05; val=amp; lab=v=>((v/hi)*100).toFixed(0)+'%'; }
+  const Y=v=>mt+ih*(1-(Math.min(Math.max(val(v),lo),hi)-lo)/(hi-lo));
+
+  ctx.strokeStyle='#eef0f3';ctx.fillStyle='#9ca3af';ctx.font='10px sans-serif';
+  for(let k=0;k<=4;k++){
+    const v=lo+(hi-lo)*k/4,y=Y(v);
+    ctx.beginPath();ctx.moveTo(ml,y);ctx.lineTo(W-mr,y);ctx.stroke();
+    ctx.fillText(lab(v),6,y+3);
+  }
+  const xs = xlog
+    ? Array.from({length:Math.max(1,Math.floor(Math.log10(fmax))-Math.ceil(Math.log10(fmin))+1)},
+                 (_,i)=>Math.pow(10,Math.ceil(Math.log10(fmin))+i))
+    : Array.from({length:5},(_,i)=>fmax*i/4);
+  xs.forEach(f=>{
+    if(f<fmin||f>fmax) return;
+    const x=X(f),t=fmt(f,'Hz'),w=ctx.measureText(t).width;
+    ctx.fillText(t,Math.min(Math.max(x-w/2,ml),W-mr-w),H-5);
+  });
+
+  ctx.save();
+  ctx.beginPath();ctx.rect(ml,mt,iw,ih);ctx.clip();
+  ctx.strokeStyle='#2563eb';ctx.lineWidth=1.1;ctx.beginPath();
+  plot.f.forEach((f,i)=>{const x=X(f),y=Y(plot.db[i]);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawWave(ctx,W,H,plot){
+  const ml=52,mr=14,mt=10,mb=24,iw=W-ml-mr,ih=H-mt-mb;
+  const vs=plot.v, t0=plot.t[0], t1=plot.t[plot.t.length-1]||1e-9;
+  const lo=Math.min(...vs), hi=Math.max(...vs), span=(hi-lo)||1;
+  const X=t=>ml+iw*(t-t0)/Math.max(t1-t0,1e-12);
+  const Y=v=>mt+ih*(1-(v-(lo-span*.08))/(span*1.16));
+  ctx.strokeStyle='#eef0f3';ctx.fillStyle='#9ca3af';ctx.font='10px sans-serif';
+  for(let k=0;k<=4;k++){const v=lo+(hi-lo)*k/4,y=Y(v);
+    ctx.beginPath();ctx.moveTo(ml,y);ctx.lineTo(W-mr,y);ctx.stroke();
+    ctx.fillText(v.toFixed(3),6,y+3);}
+  for(let k=0;k<=4;k++){const t=t0+(t1-t0)*k/4,x=X(t),lab=(t*1e3).toFixed(2)+' ms';
+    const w=ctx.measureText(lab).width;ctx.fillText(lab,k===0?x:(k===4?x-w:x-w/2),H-5);}
+  ctx.strokeStyle='#2563eb';ctx.lineWidth=1.1;ctx.beginPath();
+  plot.t.forEach((t,i)=>{const x=X(t),y=Y(plot.v[i]);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+  ctx.stroke();
+}
+
+/* ---------------- 滤波器设计 ---------------- */
+function si(v){
+  if(v===undefined||v===null||v==='') return NaN;
+  const m=String(v).trim().match(/^(-?\d*\.?\d+(?:[eE][+-]?\d+)?)\s*([fpnumkKMGTµ]?)/);
+  if(!m) return NaN;
+  const K={f:1e-15,p:1e-12,n:1e-9,u:1e-6,'µ':1e-6,m:1e-3,k:1e3,K:1e3,M:1e6,G:1e9,T:1e12};
+  return parseFloat(m[1])*(K[m[2]]||1);
+}
+function fillOrders(want){
+  const bp=$('d-type').value==='bandpass';
+  const max=bp?4:8;
+  const sel=$('d-order');
+  const cur=String(want||sel.value||2);
+  sel.innerHTML='';
+  for(let i=1;i<=max;i++){
+    const o=document.createElement('option');o.value=i;o.textContent=i+' 阶';sel.appendChild(o);
+  }
+  sel.value=(+cur<=max&&+cur>=1)?cur:String(Math.min(2,max));
+}
+function refreshModal(){
+  const bp=$('d-type').value==='bandpass';
+  const resp=$('d-resp').value;
+  $('row-fc').style.display=bp?'none':'';
+  $('row-flo').style.display=bp?'':'none';
+  $('row-fhi').style.display=bp?'':'none';
+  $('row-q').style.display=bp?'':'none';
+  $('row-ripple').style.display=resp==='chebyshev1'?'':'none';
+  $('row-atten').style.display=resp==='chebyshev2'?'':'none';
+  if(bp){
+    const lo=si($('d-flo').value), hi=si($('d-fhi').value);
+    if(lo>0&&hi>lo){
+      const f0=Math.sqrt(lo*hi);
+      $('d-q').value=(f0/(hi-lo)).toFixed(3);
+      $('d-fc').value=(f0/1e3).toFixed(3)+'k';
+    }
+  }
+}
+function openDesigner(n){
+  designerNode=n;
+  $('d-type').value=n.params.type||'lowpass';
+  $('d-resp').value=n.params.response||'butterworth';
+  fillOrders(n.params.order||2);
+  $('d-fc').value=n.params.fc||'50k';
+  $('d-flo').value=n.params.f_lo||'9k';
+  $('d-fhi').value=n.params.f_hi||'11k';
+  $('d-ripple').value=n.params.ripple_db||'0.5';
+  $('d-atten').value=n.params.atten_db||'40';
+  $('d-gain').value=n.params.gain||'1';
+  $('modal').classList.add('on');
+  refreshModal();
+  previewFilter();
+}
+$('d-type').onchange=()=>{fillOrders();refreshModal();previewFilter();};
+$('d-resp').onchange=()=>{refreshModal();previewFilter();};
+['d-flo','d-fhi'].forEach(id=>$(id).oninput=()=>{refreshModal();previewFilter();});
+['d-fc','d-order','d-ripple','d-atten','d-gain'].forEach(id=>$(id).onchange=previewFilter);
+$('d-range').onchange=previewFilter;
+
+async function previewFilter(){
+  const body={type:$('d-type').value,response:$('d-resp').value,order:$('d-order').value,
+    fc:$('d-fc').value,f_lo:$('d-flo').value,f_hi:$('d-fhi').value,
+    ripple_db:$('d-ripple').value,atten_db:$('d-atten').value,
+    q:$('d-q').value,gain:$('d-gain').value};
+  let d;
+  try{
+    const r=await fetch('/api/filter/preview',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body)});
+    d=await r.json();
+  }catch(e){d={ok:false,error:String(e)};}
+  drawFilter(d);
+}
+
+function drawFilter(d){
+  const cv=$('d-plot'),dpr=window.devicePixelRatio||1;
+  const W=cv.clientWidth,H=cv.clientHeight||210;
+  cv.width=W*dpr;cv.height=H*dpr;
+  const ctx=cv.getContext('2d');ctx.setTransform(1,0,0,1,0,0);ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+  if(!d.ok){ctx.fillStyle='#b91c1c';ctx.font='12px sans-serif';ctx.fillText(d.error,10,20);return;}
+  const ml=54,mr=14,mt=10,mb=26,iw=W-ml-mr,ih=H-mt-mb;
+  const fmin=d.f[0],fmax=d.f[d.f.length-1];
+  const full=$('d-range').value==='full';
+  const hi=Math.max(Math.max(...d.mag)+3,3);
+  const lo=full?Math.max(-160,Math.min(...d.mag)-4):-40;
+  const X=f=>ml+iw*(Math.log10(f)-Math.log10(fmin))/(Math.log10(fmax)-Math.log10(fmin));
+  const Y=m=>mt+ih*(1-(m-lo)/(hi-lo));
+  // -3 dB 以上：淡蓝色通带背景
+  ctx.fillStyle='rgba(37,99,235,.08)';
+  ctx.fillRect(ml,mt,iw,Math.max(0,Y(-3)-mt));
+  ctx.font='10px sans-serif';
+  // 纵向网格 + 横坐标（十倍频）
+  for(let e=Math.ceil(Math.log10(fmin));e<=Math.floor(Math.log10(fmax));e++){
+    const f=Math.pow(10,e),x=X(f);
+    ctx.strokeStyle='#f1f3f6';ctx.beginPath();ctx.moveTo(x,mt);ctx.lineTo(x,mt+ih);ctx.stroke();
+    ctx.fillStyle='#9ca3af';
+    const lab=fmt(f,'Hz'),w=ctx.measureText(lab).width;
+    ctx.fillText(lab,Math.min(Math.max(x-w/2,ml),W-mr-w),H-6);
+  }
+  // 横向网格 + 纵坐标
+  for(let k=0;k<=4;k++){
+    const m=lo+(hi-lo)*k/4,y=Y(m);
+    ctx.strokeStyle='#f1f3f6';ctx.beginPath();ctx.moveTo(ml,y);ctx.lineTo(W-mr,y);ctx.stroke();
+    ctx.fillStyle='#9ca3af';ctx.fillText(m.toFixed(0)+' dB',4,y+3);
+  }
+  // -3 dB 参考线
+  const y3=Y(-3);
+  ctx.strokeStyle='#e5e7eb';ctx.setLineDash([4,4]);ctx.beginPath();
+  ctx.moveTo(ml,y3);ctx.lineTo(W-mr,y3);ctx.stroke();ctx.setLineDash([]);
+  // 曲线：超出视窗的部分裁掉，而不是压平在边界上
+  ctx.save();
+  ctx.beginPath();ctx.rect(ml,mt,iw,ih);ctx.clip();
+  ctx.strokeStyle='#2563eb';ctx.lineWidth=1.4;ctx.beginPath();
+  d.f.forEach((f,i)=>{const x=X(f),y=Y(d.mag[i]);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+  ctx.stroke();
+  ctx.restore();
+}
+$('d-preview').onclick=previewFilter;
+$('d-cancel').onclick=()=>$('modal').classList.remove('on');
+$('d-apply').onclick=()=>{
+  const n=designerNode; if(!n) return;
+  n.params.mode='design';
+  n.params.type=$('d-type').value;
+  n.params.response=$('d-resp').value;
+  n.params.order=$('d-order').value;
+  n.params.fc=$('d-fc').value;
+  n.params.f_lo=$('d-flo').value;
+  n.params.f_hi=$('d-fhi').value;
+  n.params.ripple_db=$('d-ripple').value;
+  n.params.atten_db=$('d-atten').value;
+  n.params.Q=$('d-q').value;
+  n.params.gain=$('d-gain').value;
+  $('modal').classList.remove('on');
+  renderAll();
+};
+
+/* ---------------- 启动 ---------------- */
+async function boot(){
+  SCHEMA=await (await fetch('/api/schema')).json();
+  $('meta-fs').value=SCHEMA.meta_defaults.fs;
+  $('meta-periods').value=SCHEMA.meta_defaults.periods;
+  const s=newNode('source',24,150),a=newNode('amp',216,150),f=newNode('filter',408,150),
+        d=newNode('add',600,150),c=newNode('adc',792,150),
+        p1=newNode('scope',792,292),p2=newNode('specan',792,400);
+  d.params.n_in='1'; d.params.k=['1'];
+  nodes=[s,a,f,d,c,p1,p2];
+  edges=[{from:s.id,to:a.id,port:0},{from:a.id,to:f.id,port:0},
+         {from:f.id,to:d.id,port:0},{from:d.id,to:c.id,port:0},
+         {from:c.id,to:p1.id,port:0},{from:c.id,to:p2.id,port:0}];
+  sel={kind:'node',id:s.id};
+  renderAll(); runChain();
+}
+$('btn-run').onclick=runChain;
+window.addEventListener('resize',()=>{drawChart();
+  if($('modal').classList.contains('on')) previewFilter();});
+boot();
+</script>
+</body>
+</html>

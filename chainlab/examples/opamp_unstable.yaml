@@ -1,0 +1,9 @@
+meta:
+  name: 去补偿运放接成小增益
+  fs: 100k
+  t_window: 10周期
+
+chain:
+  - source: {type: sine, f: 1k, amp: 10m}
+  - amp:    {device: OPA847, G: 5}
+  - adc:    {device: STM32F407, vref: 3.3}

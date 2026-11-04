@@ -1,0 +1,31 @@
+name: STM32H723-ADC3
+class: adc
+part: STM32H723（ADC3，12 位）
+verified: true
+source: RM0468 Rev 3 表 245 + §29.4.24
+note: ADC3 是独立的 12 位 ADC，转换时间 = 采样时间 + TSAR；TSAR 12/10/8/6 位 = 12.5/10.5/8.5/6.5 个 ADCCLK；采样档位 2.5~640.5（与 ADC1/2 不同）。ENOB 为经验值。
+adc:
+  differential: true
+  n_bits_default: 12
+  n_bits_options: [12, 10, 8, 6]
+  radc: 6k
+  cadc: 4p
+  vref: [1.62, 3.6]
+  f_adc: 30M
+  per_bits:
+    12:
+      conv_cycles: 12.5
+      enob: 10.8
+      sample_cycles: [2.5, 6.5, 12.5, 24.5, 47.5, 92.5, 247.5, 640.5]
+    10:
+      conv_cycles: 10.5
+      enob: 9.0
+      sample_cycles: [2.5, 6.5, 12.5, 24.5, 47.5, 92.5, 247.5, 640.5]
+    8:
+      conv_cycles: 8.5
+      enob: 7.2
+      sample_cycles: [2.5, 6.5, 12.5, 24.5, 47.5, 92.5, 247.5, 640.5]
+    6:
+      conv_cycles: 6.5
+      enob: 5.4
+      sample_cycles: [2.5, 6.5, 12.5, 24.5, 47.5, 92.5, 247.5, 640.5]

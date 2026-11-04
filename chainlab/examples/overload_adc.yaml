@@ -1,0 +1,9 @@
+meta:
+  name: 1MSPS 下 10k 源阻抗
+  fs: 1M
+  t_window: 10周期
+
+chain:
+  - source: {type: sine, f: 1k, amp: 100m}
+  - amp:    {device: OPA227, G: 8}
+  - adc:    {device: STM32F407, vref: 3.3, sample: {solve: {rain: 10k}}}

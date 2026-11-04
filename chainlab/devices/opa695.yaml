@@ -1,0 +1,24 @@
+name: OPA695
+class: opamp
+part: OPA695
+verified: true
+source: |
+  OPA695.txt:167「Small-Signal Bandwidth (VO = 0.5VPP)  G = +1, RF = 523Ω  1700  MHz」
+  OPA695.txt:168「G = +2, RF = 511Ω  1400  MHz」；OPA695.txt:169「G = +8, RF = 402Ω  450 … MHz」
+  OPA695.txt:170「G = +16, RF = 249Ω  350  MHz」
+  OPA695.txt:174「Slew Rate  G = –8, VO = 4V Step  4300  …  V/µs  min  B」
+  OPA695.txt:185「Input Voltage Noise  f > 1MHz  1.8  …  nV/√Hz  max  B」
+  OPA695.txt:186「Noninverting Input Current Noise  f > 1MHz  18  …  pA/√Hz  max  B」
+note: 电流反馈（CFB），没有 GBW 指标，带宽按增益查表（G=1/2/8/16 → 1700/1400/450/350 MHz，VO=0.5Vpp，±5V）。旧版本曾误填 950M/450M/130M/60M，那些数字在本手册里查不到，已按手册改正
+opamp:
+  en: 1.8n      # f>1MHz, Typ（OPA695.txt:185）
+  in: 18p       # Noninverting, f>1MHz, Typ（OPA695.txt:186）
+  sr: 4300      # G=–8, 4V 阶跃, Typ（OPA695.txt:174）
+  v_swing: 2.5
+  i_out_max: 80m
+  g_min: 1
+  bw_at_gain:   # Small-Signal Bandwidth，VO = 0.5 Vpp，±5V（OPA695.txt:167-170）
+    1: 1700M
+    2: 1400M
+    8: 450M
+    16: 350M

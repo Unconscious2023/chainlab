@@ -1,0 +1,15 @@
+name: OPA2140
+class: opamp
+part: OPA2140
+verified: true
+source: |
+  OPA2140.txt:160「Input Voltage Noise Density  en  f = 1kHz  5.1  nV/√Hz」
+  OPA2140.txt:162「Input Current Noise Density  In  f = 1kHz  0.8  fA/√Hz」
+  OPA2140.txt:181「Gain Bandwidth Product  BW  11  MHz」
+  OPA2140.txt:182「Slew Rate  20  V/ms」
+note: 文本转写把 µ 写成 m（故 V/ms 即 V/µs、mV 即 µV）；首页 FEATURES 亦为 Slew Rate 20V/µs
+opamp:
+  en: 5.1n    # f=1kHz, Typ（OPA2140.txt:160）
+  in: 0.8f    # f=1kHz, Typ（OPA2140.txt:162）
+  gbw: 11M    # Typ（OPA2140.txt:181）
+  sr: 20      # Typ，手册写作 20 V/ms（=V/µs）（OPA2140.txt:182）

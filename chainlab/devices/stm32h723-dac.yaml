@@ -1,0 +1,16 @@
+name: STM32H723-DAC
+class: dac
+part: STM32H723（DAC1，12 位）
+verified: false
+source:
+  bits: 'STM32H723.pdf:83050「Left or right data alignment in 12-bit mode」'
+  fs_max: 'STM32H723.pdf:83080「Maximum sampling time … 1 MSPS」'
+  vfs: 'STM32H723.pdf:83349「Digital inputs are converted to output voltages on a linear conversion between 0 and VREF+」；83353「DACoutput = VREF × DOR / 4096」'
+  differential: 'STM32H723.pdf:83079「I/O connection DAC1_OUT1 on PA4, DAC1_OUT2 on PA5」'
+note: 行号为 out/pdftext/STM32H723.txt 的文本行号。手册只给 12 位、最高 1 MSPS 和 0~VREF+ 的转换关系；DAC 建立时间与输出噪声密度在手册中未给，settling 与 noise_density 留空。VREF+ 由外部提供，vref 未填，工具按面板上的参考电压计算满量程。DAC 只有单端 DAC_OUT 输出，无差分模式。
+dac:
+  bits: 12
+  n_bits_default: 12
+  n_bits_options: [12]
+  fs_max: 1M
+  differential: false

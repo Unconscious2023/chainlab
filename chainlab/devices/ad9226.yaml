@@ -1,0 +1,24 @@
+name: AD9226
+class: adc
+part: AD9226
+verified: true
+source:
+  bits: 'AD9226.PDF:73「RESOLUTION … 12 … Bits」'
+  fs_max: 'AD9226.PDF:175「Max Conversion Rate … 65 … MHz」'
+  enob: 'AD9226.PDF:9「ENOB = 11.1 @ fIN = 10 MHz」'
+  vref: 'AD9226.PDF:95-96「Input Span (VREF = 1 V) 1 V p-p / (VREF = 2 V) 2 V p-p」'
+  differential: 'AD9226.PDF:41-46「multistage differential pipelined architecture … truly differential input structure」'
+  cadc: 'AD9226.PDF:98「Input Capacitance … 7 … pF」'
+note: "行号为 out/pdftext/AD9226.txt 的文本行号。差分输入跨度 2 V p-p（±1 V），工具里 vref 表示差分半跨度，故填 1.0 V。手册只给输入电容 7 pF，未给输入电阻，r_in 留空。按流水线 ADC 处理（sampling_model: pipeline）：内部 SHA 建立不占转换周期，故 conv_cycles=0；f_adc 取手册最高转换率 65 MHz。"
+adc:
+  differential: true
+  n_bits_default: 12
+  n_bits_options: [12]
+  vref: 1.0
+  fs_max: 65M
+  f_adc: 65M
+  sampling_model: pipeline
+  cadc: 7p
+  per_bits:
+    12:
+      enob: 11.1

@@ -1,0 +1,29 @@
+name: DAC904
+class: dac
+part: DAC904
+verified: true
+source:
+  bits: 'DAC904.PDF:127「RESOLUTION … 14 … Bits」'
+  fs_max: 'DAC904.PDF:128「OUTPUT UPDATE RATE … 2.7V to 3.3V … 165 … MSPS」'
+  settling: 'DAC904.PDF:168「Output Settling Time … to 0.1% … 30 … ns」'
+  noise_density: 'DAC904.PDF:182「Output Noise … IOUT = 20mA, RLOAD = 50Ω … 50 … pA/√Hz」'
+  vref: 'DAC904.PDF:186「Reference Voltage … +1.24 … V」'
+  i_out_fs: 'DAC904.PDF:173「Full-Scale Output Range(FSR) … 2.0 … 20.0 … mA」'
+  differential: 'DAC904.PDF:121「differential transformer coupled output」'
+  output_resistance: 'DAC904.PDF:183「Output Resistance … 200 … kΩ」'
+  output_compliance: 'DAC904.PDF:174「Output Compliance Range … –1.0 … +1.25 … V」'
+note: 行号为 out/pdftext/DAC904.txt 的文本行号。手册给出 3.3 V 供电时 165 MSPS、5 V 供电时 200 MSPS，本档取 165 MSPS。电流输出型：满量程 2~20 mA，电压满量程由外部负载电阻决定，vfs 按 i_out_fs × r_load 折算；50 pA/√Hz 为电流噪声，按 r_load 折成电压噪声。
+dac:
+  bits: 14
+  n_bits_default: 14
+  n_bits_options: [14]
+  fs_max: 165M
+  fs_max_5v: 200M
+  settling: 30n
+  vref: 1.24
+  i_out_fs: [2m, 20m]
+  differential: true
+  noise_density: 50p
+  noise_density_kind: current
+  output_resistance: 200k
+  output_compliance: [-1.0, 1.25]

@@ -1,0 +1,15 @@
+name: OPA828
+class: opamp
+part: OPA828
+verified: true
+source: |
+  OPA828.txt:268「Input voltage noise density  f = 1 kHz  4.3  nV/√Hz」
+  OPA828.txt:270「Input current noise density  iN  f = 1 kHz  1.2  fA/√Hz」
+  OPA828.txt:325「GBW  Gain-bandwidth product  VO = 10 mVPP, CL = 30 pF  50  MHz」
+  OPA828.txt:326-327「SR  Slew rate  G = +1, VO = 10-V step  150  V/µs」
+note: JFET 输入（OPA627 后继）；VS=±15V 规格表（TA=25°C, RL=2kΩ）
+opamp:
+  en: 4.3n    # f=1kHz, Typ（OPA828.txt:268）
+  in: 1.2f    # f=1kHz, Typ（OPA828.txt:270）
+  gbw: 50M    # Typ（OPA828.txt:325）
+  sr: 150     # G=+1, 10V 阶跃, Typ（OPA828.txt:326-327）

@@ -1,0 +1,11 @@
+name: OP27
+class: opamp
+opamp:
+  gbw: 8M
+  sr: 2.8
+  en: 3n
+  in: 0.4p   # OP27 datasheet：Current Noise 0.4 pA/√Hz @1kHz
+  vos: 25u
+  v_swing: 3.3
+  i_out_max: 25m
+  g_min: 1

@@ -1,0 +1,21 @@
+name: THS3091
+class: opamp
+part: THS3091
+verified: true
+source: |
+  THS3091.txt:221「Input voltage noise  f > 10 kHz  2  nV / √Hz  TYP」
+  THS3091.txt:222「Noninverting input current noise  f > 10 kHz  14  pA / √Hz  TYP」
+  THS3091.txt:198「Small-signal bandwidth, -3 dB  G = 1, RF = 1.78 kΩ, VO = 200 mVPP  235  MHz  TYP」
+  THS3091.txt:199「G = 2, RF = 1.21 kΩ, VO = 200 mVPP  210  MHz」
+  THS3091.txt:201「G = 5, RF = 1 kΩ, VO = 200 mVPP  190  MHz」；THS3091.txt:203「G = 10, RF = 866 Ω  180  MHz」
+  THS3091.txt:208「Slew rate (25% to 75% level)  G = 5, VO = 20-V step, RF = 1 kΩ  7300  V/µs  TYP」
+note: 电流反馈（CFB），没有 GBW 指标，带宽按增益查表（bw_at_gain）；VS=±15V 规格表（RF=1.21kΩ, G=+2 默认）；SR 取 G=5/20V 阶跃的那一行（G=2/10V 阶跃为 5000V/µs）
+opamp:
+  en: 2n          # f>10kHz, Typ（THS3091.txt:221）
+  in: 14p         # Noninverting, f>10kHz, Typ（THS3091.txt:222）
+  sr: 7300        # G=5, 20V 阶跃, Typ（THS3091.txt:208）
+  bw_at_gain:     # Small-signal bandwidth -3dB, Typ（THS3091.txt:198-203）
+    1: 235M
+    2: 210M
+    5: 190M
+    10: 180M

@@ -1,0 +1,11 @@
+name: NE5532
+class: opamp
+opamp:
+  gbw: 10M
+  sr: 9
+  en: 5n
+  in: 0.7p   # NE5532 datasheet：Equivalent input noise current 0.7 pA/√Hz @1kHz
+  vos: 0.5m
+  v_swing: 3.3
+  i_out_max: 38m
+  g_min: 1

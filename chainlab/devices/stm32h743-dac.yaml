@@ -1,0 +1,14 @@
+name: STM32H743-DAC
+class: dac
+part: STM32H743（DAC1，12 位）
+verified: false
+source:
+  bits: 'STM32H743.pdf:1021「DAC x 通道 1 12 位右对齐数据保持寄存器 (DACx_DHR12R1)」'
+  vfs: 'STM32H743.pdf:64860「经过线性转换后，数字输入会转换为 0 到 VREF+ 之间的输出电压」'
+  differential: 'STM32H743.pdf:64861「各 DAC 通道引脚的模拟输出电压」'
+note: 行号为 out/pdftext/STM32H743.txt 的文本行号。手册未给 DAC 更新率、建立时间与输出噪声密度，fs_max、settling、noise_density 留空；VREF+ 由外部提供，vref 未填。DAC 只有单端 DAC_OUT 输出，无差分模式。
+dac:
+  bits: 12
+  n_bits_default: 12
+  n_bits_options: [12]
+  differential: false

@@ -1,0 +1,16 @@
+name: AD835
+class: multiplier
+part: AD835（四象限模拟乘法器，250 MHz）
+verified: true
+source: AD835 datasheet（8 页）—— 馈通 −46 dB(X)/−60 dB(Y) @ 输入 ±1 V，带宽 250 MHz，压摆率 1000 V/µs
+note: >-
+  W = XY/U + Z，U = 1。馈通按 −46 dB / −60 dB 折算到 1 V 输入，即 5 mV / 1 mV。
+noise_source: AD835 规格表「Voltage Noise Spectral Density  X = Y = 0, f < 10 MHz  50 nV/√Hz」
+noise_density: 50n      # V/√Hz，输出噪声密度
+multiplier:
+  U: 1
+  bw: 250M
+  feedthrough_x: 5m
+  feedthrough_y: 1m
+  slew: 1000
+  v_swing: 2.5

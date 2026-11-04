@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+build/
+dist/
+
+# 手册 PDF 不入库（体积大、有版权）
+datasheet/*.pdf
+datasheet/*.PDF
+
+# 运行产物
+out/
+.server.pid
+*.log
+
+# 编辑器
+.vscode/
+.idea/
+.DS_Store

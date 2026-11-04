@@ -1,0 +1,20 @@
+name: OPA690
+class: opamp
+part: OPA690
+verified: true
+source: |
+  OPA690.txt:183「Small-Signal Bandwidth  G = +1, VO = 0.5Vp-p, RF = 25Ω  500  MHz  typ  C」
+  OPA690.txt:184「G = +2, VO = 0.5Vp-p  220  …  MHz  typ  C」
+  OPA690.txt:185「G = +10, VO = 0.5Vp-p  30  …  MHz  typ  C」
+  OPA690.txt:190「Slew Rate  G = +2, 4V Step  1800  …  V/µs  typ  C」
+  OPA690.txt:200「Input Voltage Noise  f > 1MHz  5.5  nV/√Hz  typ  C」
+  OPA690.txt:201「Input Current Noise  f > 1MHz  3.1  pA/√Hz  typ  C」
+note: 电流反馈（CFB），没有 GBW 指标，带宽按增益查表（bw_at_gain）；VS=±5V 规格表（RF=402Ω, G=+2 默认）
+opamp:
+  en: 5.5n      # f>1MHz, Typ（OPA690.txt:200）
+  in: 3.1p      # f>1MHz, Typ（OPA690.txt:201）
+  sr: 1800      # G=+2, 4V 阶跃, Typ（OPA690.txt:190）
+  bw_at_gain:   # Small-Signal Bandwidth, Typ（OPA690.txt:183-185）
+    1: 500M
+    2: 220M
+    10: 30M

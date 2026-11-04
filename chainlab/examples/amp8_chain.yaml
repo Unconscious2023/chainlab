@@ -1,0 +1,13 @@
+meta:
+  name: 8倍放大链路
+  fs: 100k
+  t_window: 10周期
+
+chain:
+  - source: {type: sine, f: 1k, amp: 100m}
+  - amp:    {device: OPA227, G: 8, v_swing: 3.3}
+  - filter: {mode: design, type: lowpass, order: 2, fc: 50k, Q: 0.7071}
+  - add:    {dc: 1.65}
+  - adc:    {device: STM32F407, vref: 3.3, sample: {solve: {rain: 10k}}}
+  - scope:  {}
+  - specan: {n_fft: 65536}

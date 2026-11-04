@@ -1,0 +1,27 @@
+name: STM32H723-ADC12
+class: adc
+part: STM32H723（ADC1/2，16 位）
+verified: true
+source: RM0468 Rev 3 表 228 + §28.4.24
+note: 与 H743 的 16 位 ADC 时序相同；TSAR 16/14/12/10/8 位 = 8.5/7.5/6.5/5.5/4.5 个 ADCCLK；采样档位 1.5~810.5。ENOB 为经验值。
+adc:
+  differential: true
+  n_bits_default: 16
+  n_bits_options: [16, 14, 12]
+  radc: 6k
+  cadc: 4p
+  vref: [1.62, 3.6]
+  f_adc: 50M
+  per_bits:
+    16:
+      conv_cycles: 8.5
+      enob: 13.0
+      sample_cycles: [1.5, 2.5, 8.5, 16.5, 32.5, 64.5, 387.5, 810.5]
+    14:
+      conv_cycles: 7.5
+      enob: 12.4
+      sample_cycles: [1.5, 2.5, 8.5, 16.5, 32.5, 64.5, 387.5, 810.5]
+    12:
+      conv_cycles: 6.5
+      enob: 11.4
+      sample_cycles: [1.5, 2.5, 8.5, 16.5, 32.5, 64.5, 387.5, 810.5]

@@ -1,0 +1,21 @@
+name: AD8021
+class: opamp
+part: AD8021
+verified: false
+source: |
+  AD8021.txt:106「Input Voltage Noise  f = 50 kHz  2.1  2.6  nV/√Hz」（Typ 2.1 / Max 2.6）
+  AD8021.txt:107「Input Current Noise  f = 50 kHz  2.1  pA/√Hz」
+  AD8021.txt:89「–3 dB Small Signal Bandwidth  G = +1, CC = 10 pF, VO = 0.05 V p-p  355  490  MHz」（Min/Typ）
+  AD8021.txt:90「G = +2, CC = 7 pF, VO = 0.05 V p-p  160  205  MHz」；AD8021.txt:91「G = +5, CC = 2 pF  185  MHz」
+  AD8021.txt:92「G = +10, CC = 0 pF, VO = 0.05 V p-p  110  150  MHz」
+  AD8021.txt:93「Slew Rate, 1 V Step  G = +1, CC = 10 pF  95  120  V/µs」（Min/Typ）
+note: 电压反馈；gbw 未在手册正文定位（全篇只有 –3 dB 带宽，无 GBW/GBP 行），带宽改用 bw_at_gain 表；VS=±5V 规格表
+opamp:
+  en: 2.1n      # f=50kHz, Typ（AD8021.txt:106）
+  in: 2.1p      # f=50kHz, Typ（AD8021.txt:107）
+  sr: 120       # G=+1, 1V 阶跃, Typ（AD8021.txt:93）
+  bw_at_gain:   # –3 dB 小信号带宽, Typ（AD8021.txt:89-92）
+    1: 490M
+    2: 205M
+    5: 185M
+    10: 150M

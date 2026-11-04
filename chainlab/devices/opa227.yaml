@@ -1,0 +1,11 @@
+name: OPA227
+class: opamp
+opamp:
+  gbw: 8M
+  sr: 2.3
+  en: 3n
+  in: 0.4p   # OPA227 datasheet：Current Noise Density 0.4 pA/√Hz @1kHz
+  vos: 5u
+  v_swing: 3.8
+  i_out_max: 45m
+  g_min: 1

@@ -1,0 +1,20 @@
+name: 理想ADC
+class: adc
+part: 理想 ADC（无限位、无量化噪声）
+verified: false
+ideal: true
+differential: true
+note: 理想模型（非实际器件，无手册可对照）：无限位、无量化噪声，只做采样与限幅；用于观察纯模拟链路的真实波形
+adc:
+  differential: true
+  n_bits_default: 0
+  n_bits_options: [0]
+  radc: 1
+  cadc: 1f
+  vref: [0.001, 1000]
+  f_adc: 1G
+  per_bits:
+    0:
+      conv_cycles: 0
+      enob: 99
+      sample_cycles: [0]
