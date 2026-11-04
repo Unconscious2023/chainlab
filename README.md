@@ -1,112 +1,63 @@
-# ChainLab
+# ChainLab v1.0 · 信号链路预算与算法能力边界仿真
 
-**Signal-chain budget & algorithm-capability simulator** — for students building analog front ends for embedded competitions (e.g. China's National Undergraduate Electronic Design Contest).
+**中文** | [English](README.en.md)
 
-ChainLab answers one question fast: *given this analog chain, how much SNR / how many effective bits arrive at the ADC, and which block is to blame?*
+给电子设计竞赛的学生用的**信号链路预算工具**：把「源 → 放大 → 滤波 → 加法/乘法 → ADC → 算法」串成数据流图，毫秒级回答一个问题——
 
-It is **not** a SPICE replacement. No transistors, no parasitics, no transient accuracy. Runs in milliseconds so you can change a value and see the consequence immediately.
+> 这条链路到 ADC 还剩多少信噪比？有效位数几位？噪声是谁贡献的？
 
-```
- source ─► amp ─► filter ─► adder ─► ADC ─┬─ scope
-                                          └─ spectrum  (multiple ADCs / DACs allowed)
-```
+**它不是电路仿真器**：不做晶体管级、不做寄生、不做波形精度。改一个参数立刻看到后果，这是它存在的理由。
 
----
+![界面](docs/images/ui.png)
 
-## Highlights
-
-| | |
-|---|---|
-| **Two engines** | analytic (spectral, steady state) by default; time domain when a block has swing limits or slew rate enabled |
-| **Noise budget** | per-block contribution, input/output referred, thermal + `en` + `in·Zsrc`, integrated only to `fs/2` |
-| **Impedance layer** | `zout ∥ zin` per edge, real divider effects on gain and noise |
-| **Filter designer** | Sallen-Key / MFB (TI equations), LP/HP/BP, 2–8th order cascades, E-series rounding, GBW correction |
-| **Component mode** | type `10k`/`10n`, pick a standard topology, get the exact response from nodal analysis |
-| **ADC/DAC** | 8 ADC and 5 DAC parts with datasheet-sourced specs; multiple instances; scope/specan picks its source from the wiring |
-| **Honest limits** | every run prints what was *not* modelled |
-
-![UI](docs/images/ui.png)
-
----
-
-## Quick start
+## 快速开始
 
 ```bash
 pip install numpy pyyaml
-python -m chainlab.ui          # opens http://127.0.0.1:8765/
+python -m chainlab.ui          # 浏览器打开 http://127.0.0.1:8765/
 ```
 
-Windows users can double-click `打开界面.bat` (it finds a suitable Python, offers to install the two dependencies, then starts the server).
+Windows 用户可直接双击 `打开界面.bat`（会自动找 Python、缺依赖时询问是否安装，然后启动服务）。
 
-Run a bundled example:
+跑一个自带例子：
 
 ```bash
 python -m chainlab.cli run chainlab/examples/amp8_chain.yaml --html out/report.html
 ```
 
-Tests:
+## 它能做什么
 
-```bash
-python chainlab/tests/test_m1.py        # 19 behavioural cases
-python chainlab/tests/test_manual.py    # 5 datasheet cross-checks
-python chainlab/tests/test_devices.py   # device table sanity
-```
-
----
-
-## What it models
-
-**Blocks** — source (sine/square/triangle/AM/FM/noise, voltage or current), amplifier, filter, adder, multiplier, ADC, DAC, load, integrator, differentiator, DC block, transimpedance amp, VCO, PLL, scope, spectrum analyser, user algorithm (`.py`).
-
-**Filters** — analytic design (Butterworth / Chebyshev I / II / Bessel) or direct component entry. Sallen-Key and MFB for low-pass and high-pass, single-stage MFB band-pass, cascades up to 8th order, E6…E96 snapping, optional op-amp GBW correction.
-
-**Devices** — 24 op-amps, 2 multipliers, 8 ADCs, 5 DACs. Every number carries a `source:` field pointing at the datasheet page/table; `verified: false` marks anything not yet cross-checked.
-
----
-
-## Documentation
-
-| File | Contents |
+| 能力 | 说明 |
 |---|---|
-| [`使用说明.md`](使用说明.md) | Full user manual (Chinese) |
-| [`AGENTS.md`](AGENTS.md) | **AI / developer handbook** — architecture, invariants, extension recipes |
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Data flow, engines, noise model |
-| [`docs/DEVICES.md`](docs/DEVICES.md) | Device YAML format |
-| [`docs/TESTING.md`](docs/TESTING.md) | Test layout and how to add cases |
-| [`CHANGELOG.md`](CHANGELOG.md) | Release notes |
+| 两套引擎 | 默认解析（频域稳态）；有摆幅限制或启用压摆率时自动切时域 |
+| 噪声预算 | 逐模块给出贡献，输入/输出参考、热噪声 + `en` + `in·Zsrc`，只积到 `fs/2` |
+| 阻抗层 | 每条边 `zout ∥ zin`，分压同时影响增益与噪声 |
+| 滤波器设计 | Sallen-Key / MFB（TI 公式），低通/高通/带通，2–8 阶级联，E 系列取整，可选 GBW 修正 |
+| 按元件值 | 只填 `10k`/`10n`，选标准拓扑，节点法算出真实响应 |
+| ADC/DAC | 8 种 ADC、5 种 DAC，可多实例；示波器/频谱仪按连线自动选观测点 |
+| 诚实边界 | 每次运行都列出「这次没建模什么」 |
 
----
+## 文档
 
-## Known limitations
+| 文件 | 内容 |
+|---|---|
+| [`使用说明.md`](使用说明.md) | 完整用户手册 |
+| [`AGENTS.md`](AGENTS.md) | **AI / 开发者手册**：架构、不变量、扩展步骤 |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | 数据流、两套引擎、噪声模型 |
+| [`docs/DEVICES.md`](docs/DEVICES.md) | 器件 YAML 格式 |
+| [`docs/TESTING.md`](docs/TESTING.md) | 测试布局与新增用例 |
+| [`CHANGELOG.md`](CHANGELOG.md) | 版本说明 |
 
-Documented rather than hidden — each run prints the relevant warnings:
+## 已知限制
 
-- DAC output noise is not folded into the ADC noise budget
-- Dual-channel ADC/DAC parts are modelled one channel per node
-- Only the selected reference ADC gets an SNR/ENOB row (switchable, not side-by-side)
-- Input resistance of the high-speed ADCs is not in their datasheets → treated as infinite
-- Junction capacitance uses a single-pole IIR in the time-domain path (analytic path is exact)
+- DAC 输出噪声不计入 ADC 噪声预算
+- 双通道 ADC/DAC 每个节点只建模一个通道
+- 指标表只显示所选基准 ADC（可切换，不并列多表）
+- 高速 ADC 的输入电阻手册未给，按无穷大处理
+- 电流源结电容的时域路径用单极点 IIR 近似（解析路径精确）
 
----
+## 许可
 
-## Repository layout
+MIT，见 [LICENSE](LICENSE)。
 
-```
-chainlab/            Python package (core engines, blocks, devices, UI server)
-  core/              graph, spectral, timedomain, metrics, filter design, runner
-  blocks/            one module per block type
-  devices/           YAML device library
-  ui/                single-file HTML UI + JSON API server
-  tests/             test suites
-datasheet/           README only — links to the vendor PDFs (not redistributed)
-doc/                 使用说明 (user manual)
-*.bat                Windows launchers
-```
-
----
-
-## License
-
-MIT — see [LICENSE](LICENSE).
-
-The vendor datasheets are **not** redistributed here (they are large and copyrighted). Every device value in `chainlab/devices/*.yaml` carries a `source:` field pointing at the exact table/page, so you can check any number against the manufacturer PDF; `datasheet/README.md` lists where to get them.
+原厂手册体积大且有版权，**不随仓库分发**；每个器件数值在 yaml 的 `source:` 里写明了出处，`datasheet/README.md` 给了官方下载入口，可逐条核对。
